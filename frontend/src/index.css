@@ -1,0 +1,44 @@
+/* Import Tailwind CSS */
+@import "tailwindcss";
+
+/* Import Leaflet CSS (Vite-compatible syntax) */
+@import "leaflet/dist/leaflet.css";
+
+
+.leaflet-top.leaflet-right {
+  top: 80px !important; /* Pushes the zoom control lower */
+  right: 10px;
+}
+
+/* Custom Animations (from your previous file) */
+@keyframes zoomFade {
+  0% {
+    transform: scale(1);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.2);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 0;
+  }
+}
+
+@keyframes fadeOut {
+  0% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+.animate-zoomFade {
+  animation: zoomFade 2.5s ease-in-out;
+}
+
+.animate-fadeOut {
+  animation: fadeOut 0.5s ease-in-out 2.4s forwards;
+}
