@@ -16,6 +16,7 @@ const mapRoutes = require("./src/routes/mapRoutes");
 const rideRouts = require("./src/routes/rideRoutes");
 const authRoutes = require("./src/routes/authRoutes");
 const captainRoutes = require("./src/routes/captainRoutes");
+const paymentRoutes = require("./src/routes/paymentRoutes")
 
 // cors config
 app.use(
@@ -33,6 +34,7 @@ app.use("/api/v1/users", authRoutes);
 app.use("/api/v1/captain", captainRoutes);
 app.use("/api/v1/maps", mapRoutes);
 app.use("/api/v1/ride", rideRouts);
+app.use("/api/v1/payment", paymentRoutes);
 
 // Global error handler
 app.use(errorHandler);
