@@ -8,6 +8,7 @@ import gsap from "gsap";
 import axios from "axios";
 import { useCaptain } from "../context/CaptainContext";
 import { useSocket } from "../context/SocketContext";
+import LiveTracking from "../components/LiveTracking";
 
 const CaptainHome = () => {
   const [ridePopupPanel, setRidePopupPanel] = useState(false);
@@ -85,7 +86,6 @@ const CaptainHome = () => {
     console.log("Captain from context:", captain);
   }, [captain]);
 
-  
   async function confirmRide() {
     try {
       const response = await axios.post(
@@ -107,13 +107,17 @@ const CaptainHome = () => {
 
   useGSAP(() => {
     gsap.to(ridePopupPanelRef.current, {
-      transform: ridePopupPanel ? "translateY(0)" : "translateY(100%)",
+      y: ridePopupPanel ? 0 : "100%",
+      duration: 0.3,
+      ease: "power2.out",
     });
   }, [ridePopupPanel]);
 
   useGSAP(() => {
     gsap.to(confirmRidePopupPanelRef.current, {
-      transform: confirmRidePopupPanel ? "translateY(0)" : "translateY(100%)",
+      y: confirmRidePopupPanel ? 0 : "100%",
+      duration: 0.3,
+      ease: "power2.out",
     });
   }, [confirmRidePopupPanel]);
 
@@ -126,8 +130,9 @@ const CaptainHome = () => {
   }
 
   return (
-    <div className="h-screen">
-      <div className="fixed p-6 top-0 flex items-center justify-between w-full">
+    <div className="h-screen relative overflow-hidden">
+      {/* Header */}
+      <div className="absolute top-0 left-0 right-0 z-30 p-6 flex items-center justify-between">
         <h1 className="text-3xl font-semibold text-black tracking-wide select-none">
           Ryde
         </h1>
@@ -139,22 +144,23 @@ const CaptainHome = () => {
         </Link>
       </div>
 
-      <div className="h-3/5">
-        <img
-          className="h-full w-full object-cover"
-          src="https://miro.medium.com/v2/resize:fit:1400/0*gwMx05pqII5hbfmX.gif"
-          alt="Background"
-        />
+      {/* Map Section with proper pointer events handling */}
+      <div className="fixed inset-0 z-0" style={{ pointerEvents: "none" }}>
+        <div style={{ height: "60%", width: "100%", pointerEvents: "auto" }}>
+          <LiveTracking />
+        </div>
       </div>
 
-      <div className="h-2/5 p-6">
+      {/* Bottom Panel */}
+      <div className="fixed bottom-0 left-0 right-0 z-10 h-2/5 p-6 bg-white rounded-t-3xl shadow-lg">
         <CaptainDetails />
       </div>
 
-      {/* Only show RidePopUp if there's a valid ride */}
+      {/* Ride Popup */}
       <div
         ref={ridePopupPanelRef}
-        className="fixed w-full z-10 bottom-0 translate-y-full bg-white px-3 py-10 pt-12"
+        className="fixed w-full z-20 bottom-0 bg-white px-3 py-10 pt-12 shadow-lg"
+        style={{ transform: "translateY(100%)" }}
       >
         {ride && (
           <RidePopUp
@@ -169,7 +175,8 @@ const CaptainHome = () => {
       {/* Confirm Ride Popup */}
       <div
         ref={confirmRidePopupPanelRef}
-        className="fixed w-full h-screen z-10 bottom-0 translate-y-full bg-white px-3 py-10 pt-12"
+        className="fixed w-full z-20 bottom-0 bg-white px-3 py-10 pt-12 shadow-lg"
+        style={{ transform: "translateY(100%)" }}
       >
         {ride && (
           <ConfirmRidePopUp
@@ -184,4 +191,3 @@ const CaptainHome = () => {
 };
 
 export default CaptainHome;
-

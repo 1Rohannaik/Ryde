@@ -5,9 +5,15 @@
 @import "leaflet/dist/leaflet.css";
 
 
-.leaflet-top.leaflet-right {
-  top: 80px !important; /* Pushes the zoom control lower */
-  right: 10px;
+/* Move zoom control lower */
+.leaflet-control-zoom {
+  top: 80px !important;
+  right: 10px !important;
+  z-index: 9999;
+}
+.leaflet-tile,
+.leaflet-control-zoom {
+  pointer-events: auto !important;
 }
 
 /* Custom Animations (from your previous file) */

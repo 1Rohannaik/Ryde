@@ -11,6 +11,7 @@ import WaitingForDriver from "../components/WaitingForDriver";
 import { UserContext } from "../context/UserContext";
 import { useNavigate } from "react-router-dom";
 import { useSocket } from "../context/SocketContext";
+import LiveTracking from "../components/LiveTracking";
 
 const Home = () => {
   const [pickup, setPickup] = useState("");
@@ -33,6 +34,7 @@ const Home = () => {
   const waitingForDriverRef = useRef(null);
   const panelRef = useRef(null);
   const panelCloseRef = useRef(null);
+  const mapContainerRef = useRef(null);
 
   const { user } = useContext(UserContext);
   const navigate = useNavigate();
@@ -62,20 +64,17 @@ const Home = () => {
     };
   }, [socket]);
 
+  useEffect(() => {
+    socket.on("ride-started", (ride) => {
+      console.log("Ride started:", ride);
+      setWaitingForDriver(false);
+      navigate("/riding", { state: { ride } });
+    });
 
-useEffect(() => {
-  socket.on("ride-started", (ride) => {
-    console.log("Ride started:", ride); // Optional: Debug
-    setWaitingForDriver(false);
-    navigate("/riding", { state: { ride } });
-  });
-
-  // Cleanup to avoid duplicate listeners
-  return () => {
-    socket.off("ride-started");
-  };
-}, []);
-
+    return () => {
+      socket.off("ride-started");
+    };
+  }, []);
 
   const handlePickupChange = async (e) => {
     const value = e.target.value;
@@ -119,7 +118,6 @@ useEffect(() => {
       return;
     }
 
-    // Immediately show vehicle panel without animation
     gsap.killTweensOf(vehiclePanelRef.current);
     vehiclePanelRef.current.style.transform = "translateY(0)";
     setVehiclePanel(true);
@@ -179,10 +177,8 @@ useEffect(() => {
 
   useGSAP(() => {
     if (vehiclePanel) {
-      // Skip animation when opening
       vehiclePanelRef.current.style.transform = "translateY(0)";
     } else {
-      // Keep animation when closing
       gsap.to(vehiclePanelRef.current, {
         y: "100%",
         duration: 0.3,
@@ -218,8 +214,8 @@ useEffect(() => {
   return (
     <div className="h-screen relative overflow-hidden">
       {/* Header with logo and profile icon */}
-      <div className="absolute top-0 left-0 right-0 z-10 flex justify-between items-center p-5">
-        <h1 className="text-2xl font-semibold text-black tracking-wide select-none">
+      <div className="absolute top-0 left-0 right-0 z-30 flex justify-between items-center p-5">
+        <h1 className="text-3xl font-semibold text-black tracking-wide select-none">
           Ryde
         </h1>
         <button
@@ -230,129 +226,161 @@ useEffect(() => {
         </button>
       </div>
 
-      <div className="h-screen w-screen">{/* <LiveTracking /> */}</div>
+      {/* Map container with proper pointer events handling */}
+      <div
+        ref={mapContainerRef}
+        className="fixed inset-0 z-0"
+        style={{
+          pointerEvents: "none", // Disable pointer events for container
+        }}
+      >
+        <div style={{ height: "100%", width: "100%", pointerEvents: "auto" }}>
+          <LiveTracking />
+        </div>
+      </div>
 
-      {/* Bottom Sliding Panels */}
-      <div className="flex flex-col justify-end h-screen absolute top-0 w-full">
-        <div className="h-[30%] p-6 bg-white relative">
-          <h5
-            ref={panelCloseRef}
-            onClick={() => setPanelOpen(false)}
-            className="absolute opacity-0 right-6 top-5 text-2xl"
+      {/* UI Overlay - contains all interactive elements */}
+      <div
+        className="fixed inset-0 z-10"
+        style={{
+          pointerEvents: "none", // Disabled by default
+        }}
+      >
+        {/* Bottom Sliding Panels */}
+        <div className="flex flex-col justify-end h-screen w-full">
+          <div
+            className="h-[30%] p-6 bg-white relative"
+            style={{ pointerEvents: "auto" }} // Enable for this panel
           >
-            <i className="ri-arrow-down-wide-line"></i>
-          </h5>
-          <h4 className="text-2xl font-semibold">Find a trip</h4>
+            <h5
+              ref={panelCloseRef}
+              onClick={() => setPanelOpen(false)}
+              className="absolute opacity-0 right-6 top-5 text-2xl"
+            >
+              <i className="ri-arrow-down-wide-line"></i>
+            </h5>
+            <h4 className="text-2xl font-semibold">Find a trip</h4>
 
-          <form className="relative py-3" onSubmit={submitHandler}>
-            <div className="absolute h-16 w-1 top-1/2 -translate-y-1/2 left-5 flex flex-col items-center justify-between">
-              <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-              <div className="flex-1 w-full bg-gradient-to-b from-green-500 to-red-500 rounded-full"></div>
-              <div className="w-3 h-3 bg-red-500 rounded-full"></div>
-            </div>
-            <input
-              onClick={() => {
-                setPanelOpen(true);
-                setActiveField("pickup");
-              }}
-              value={pickup}
-              onChange={handlePickupChange}
-              className="bg-[#eee] px-12 py-2 text-lg rounded-lg w-full"
-              type="text"
-              placeholder="Add a pick-up location"
-            />
-            <input
-              onClick={() => {
-                setPanelOpen(true);
-                setActiveField("destination");
-              }}
-              value={destination}
-              onChange={handleDestinationChange}
-              className="bg-[#eee] px-12 py-2 text-lg rounded-lg w-full mt-3"
-              type="text"
-              placeholder="Enter your destination"
-            />
-          </form>
+            <form className="relative py-3" onSubmit={submitHandler}>
+              <div className="absolute h-16 w-1 top-1/2 -translate-y-1/2 left-5 flex flex-col items-center justify-between">
+                <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+                <div className="flex-1 w-full bg-gradient-to-b from-green-500 to-red-500 rounded-full"></div>
+                <div className="w-3 h-3 bg-red-500 rounded-full"></div>
+              </div>
+              <input
+                onClick={() => {
+                  setPanelOpen(true);
+                  setActiveField("pickup");
+                }}
+                value={pickup}
+                onChange={handlePickupChange}
+                className="bg-[#eee] px-12 py-2 text-lg rounded-lg w-full"
+                type="text"
+                placeholder="Add a pick-up location"
+              />
+              <input
+                onClick={() => {
+                  setPanelOpen(true);
+                  setActiveField("destination");
+                }}
+                value={destination}
+                onChange={handleDestinationChange}
+                className="bg-[#eee] px-12 py-2 text-lg rounded-lg w-full mt-3"
+                type="text"
+                placeholder="Enter your destination"
+              />
+            </form>
 
-          <button
-            onClick={findTrip}
-            className="bg-black text-white px-4 py-2 rounded-lg mt-3 w-full"
+            <button
+              onClick={findTrip}
+              className="bg-black text-white px-4 py-2 rounded-lg mt-3 w-full"
+            >
+              Find Trip
+            </button>
+          </div>
+
+          {/* Location Search Panel */}
+          <div
+            ref={panelRef}
+            className="bg-white h-0"
+            style={{ pointerEvents: "auto" }}
           >
-            Find Trip
-          </button>
+            <LocationSearchPanel
+              suggestions={
+                activeField === "pickup"
+                  ? pickupSuggestions
+                  : destinationSuggestions
+              }
+              setPanelOpen={setPanelOpen}
+              setVehiclePanel={setVehiclePanel}
+              setPickup={setPickup}
+              setDestination={setDestination}
+              activeField={activeField}
+            />
+          </div>
         </div>
 
-        {/* Location Search Panel */}
-        <div ref={panelRef} className="bg-white h-0">
-          <LocationSearchPanel
-            suggestions={
-              activeField === "pickup"
-                ? pickupSuggestions
-                : destinationSuggestions
-            }
-            setPanelOpen={setPanelOpen}
+        {/* Vehicle Panel */}
+        <div
+          ref={vehiclePanelRef}
+          className="fixed w-full z-20 bottom-0 bg-white px-3 py-10 pt-12 shadow-lg"
+          style={{
+            transform: "translateY(100%)",
+            pointerEvents: "auto",
+          }}
+        >
+          <VehiclePanel
+            fare={fare}
+            selectVehicle={setVehicleType}
+            setConfirmRidePanel={setConfirmRidePanel}
             setVehiclePanel={setVehiclePanel}
-            setPickup={setPickup}
-            setDestination={setDestination}
-            activeField={activeField}
           />
         </div>
-      </div>
 
-      {/* Vehicle Panel - Will appear instantly */}
-      <div
-        ref={vehiclePanelRef}
-        className="fixed w-full z-20 bottom-0 bg-white px-3 py-10 pt-12 shadow-lg"
-        style={{ transform: "translateY(100%)" }}
-      >
-        <VehiclePanel
-          fare={fare}
-          selectVehicle={setVehicleType}
-          setConfirmRidePanel={setConfirmRidePanel}
-          setVehiclePanel={setVehiclePanel}
-        />
-      </div>
+        {/* Other panels */}
+        <div
+          ref={confirmRidePanelRef}
+          className="fixed w-full z-20 bottom-0 bg-white px-3 py-6 pt-12 shadow-lg"
+          style={{ pointerEvents: "auto" }}
+        >
+          <ConfirmRide
+            createRide={createRide}
+            pickup={pickup}
+            destination={destination}
+            fare={fare}
+            vehicleType={vehicleType}
+            setConfirmRidePanel={setConfirmRidePanel}
+            setVehicleFound={setVehicleFound}
+          />
+        </div>
 
-      {/* Other panels (keep their animations) */}
-      <div
-        ref={confirmRidePanelRef}
-        className="fixed w-full z-20 bottom-0 bg-white px-3 py-6 pt-12 shadow-lg"
-      >
-        <ConfirmRide
-          createRide={createRide}
-          pickup={pickup}
-          destination={destination}
-          fare={fare}
-          vehicleType={vehicleType}
-          setConfirmRidePanel={setConfirmRidePanel}
-          setVehicleFound={setVehicleFound}
-        />
-      </div>
+        <div
+          ref={vehicleFoundRef}
+          className="fixed w-full z-20 bottom-0 bg-white px-3 py-6 pt-12 shadow-lg"
+          style={{ pointerEvents: "auto" }}
+        >
+          <LookingForDriver
+            createRide={createRide}
+            pickup={pickup}
+            destination={destination}
+            fare={fare}
+            vehicleType={vehicleType}
+            setVehicleFound={setVehicleFound}
+          />
+        </div>
 
-      <div
-        ref={vehicleFoundRef}
-        className="fixed w-full z-20 bottom-0 bg-white px-3 py-6 pt-12 shadow-lg"
-      >
-        <LookingForDriver
-          createRide={createRide}
-          pickup={pickup}
-          destination={destination}
-          fare={fare}
-          vehicleType={vehicleType}
-          setVehicleFound={setVehicleFound}
-        />
-      </div>
-
-      <div
-        ref={waitingForDriverRef}
-        className="fixed w-full z-20 bottom-0 bg-white px-3 py-6 pt-12 shadow-lg"
-      >
-        <WaitingForDriver
-          ride={ride}
-          setVehicleFound={setVehicleFound}
-          setWaitingForDriver={setWaitingForDriver}
-          waitingForDriver={waitingForDriver}
-        />
+        <div
+          ref={waitingForDriverRef}
+          className="fixed w-full z-20 bottom-0 bg-white px-3 py-6 pt-12 shadow-lg"
+          style={{ pointerEvents: "auto" }}
+        >
+          <WaitingForDriver
+            ride={ride}
+            setVehicleFound={setVehicleFound}
+            setWaitingForDriver={setWaitingForDriver}
+            waitingForDriver={waitingForDriver}
+          />
+        </div>
       </div>
     </div>
   );

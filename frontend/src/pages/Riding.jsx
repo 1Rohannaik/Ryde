@@ -1,5 +1,5 @@
 import React from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import LiveTracking from "../components/LiveTracking";
 import { useSocket } from "../context/SocketContext";
 import { useEffect } from "react";
@@ -27,7 +27,7 @@ const Riding = () => {
     return () => {
       socket.off("ride-ended", handleRideEnded);
     };
-  }, [socket]);
+  }, [socket, navigate]);
 
   const handlePayment = async () => {
     const stripe = await stripePromise;
@@ -57,25 +57,29 @@ const Riding = () => {
   };
 
   return (
-    <div className="h-screen bg-gray-50">
-      {/* Header */}
-      <div className="absolute top-0 left-0 right-0 z-10 p-4 flex justify-between items-center">
+    <div className="h-screen bg-gray-50 relative">
+      {/* Header with logo on left and profile icon on right */}
+      <div className="absolute top-0 left-0 right-0 z-20 p-4 flex justify-between items-center">
+        {/* Ryde Logo - Left */}
+        <h2 className="text-2xl font-semibold text-black tracking-wide select-none">
+          Ryde
+        </h2>
+        {/* Profile Icon - Right */}
         <button
-          onClick={() => navigate(-1)}
-          className="h-10 w-10 bg-white shadow-md flex items-center justify-center rounded-full"
+          onClick={() => navigate("/user-profile")}
+          className="h-10 w-10 bg-white shadow-md flex items-center justify-center rounded-full z-30"
         >
-          <i className="ri-arrow-left-line text-xl text-gray-700"></i>
+          <i className="ri-user-line text-xl text-gray-700"></i>
         </button>
-        <div className="w-10"></div>
       </div>
 
       {/* Map Section */}
-      <div className="h-2/5 bg-gray-200">
+      <div className="h-3/5 bg-gray-200 relative z-0">
         <LiveTracking />
       </div>
 
       {/* Ride Info Section */}
-      <div className="h-3/5 p-6 rounded-t-3xl bg-white shadow-lg -mt-6 relative z-10">
+      <div className="h-2/5 p-6 rounded-t-3xl bg-white shadow-lg -mt-6 relative z-10">
         {/* Captain Info */}
         <div className="flex items-center gap-4 p-4 bg-gray-50 rounded-xl shadow-sm mb-6">
           <div className="relative">

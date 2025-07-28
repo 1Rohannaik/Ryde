@@ -3,7 +3,7 @@ import { Link, useLocation } from "react-router-dom";
 import FinishRide from "../components/FinnishRide";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
-// import LiveTracking from "../components/LiveTracking";
+import LiveTracking from "../components/LiveTracking";
 
 const CaptainRiding = () => {
   const [finishRidePanel, setFinishRidePanel] = useState(false);
@@ -27,7 +27,7 @@ const CaptainRiding = () => {
   );
 
   return (
-    <div className="h-screen relative flex flex-col justify-end">
+    <div className="h-screen relative flex flex-col justify-end z-10">
       <div className="fixed p-6 top-0 flex items-center justify-between w-screen">
         <h1 className="text-3xl font-semibold text-black tracking-wide select-none pb-5">
           Ryde
@@ -65,7 +65,7 @@ const CaptainRiding = () => {
       </div>
 
       <div className="h-screen fixed w-screen top-0 z-[-1]">
-        {/* <LiveTracking /> */}
+        <LiveTracking />
       </div>
     </div>
   );

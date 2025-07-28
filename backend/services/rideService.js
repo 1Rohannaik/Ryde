@@ -155,12 +155,12 @@ async function endRide({ rideId }) {
     include: [
       {
         model: User,
-        as: "user", // 👈 REQUIRED if you used alias in model association
+        as: "user", 
         attributes: ["id", "socketId", "firstname", "lastname"],
       },
       {
         model: Captain,
-        as: "captain", // 👈 REQUIRED if you used alias
+        as: "captain", 
         attributes: ["id", "socketId", "firstname", "lastname"],
       },
     ],
