@@ -10,9 +10,9 @@ const LookingForDriver = (props) => {
 
   // Map vehicleType to display names
   const vehicleNames = {
-    car: "UberGo",
+    car: "RydeGo",
     moto: "Moto",
-    auto: "UberAuto",
+    auto: "RydeAuto",
   };
 
   return (

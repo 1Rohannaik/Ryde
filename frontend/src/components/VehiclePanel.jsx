@@ -78,12 +78,12 @@ const VehiclePanel = ({
           <img
             className="h-11 w-16 object-cover rounded-lg"
             src="https://swyft.pl/wp-content/uploads/2023/05/how-many-people-can-a-uberx-take.jpg"
-            alt="UberGo"
+            alt="RydeGo"
           />
 
           <div className="ml-4 flex-1">
             <h4 className="text-lg font-semibold text-gray-800">
-              UberGo{" "}
+              RydeGo{" "}
               <span className="text-gray-600 text-sm">
                 <i className="ri-user-3-fill"></i> 4
               </span>
@@ -129,11 +129,11 @@ const VehiclePanel = ({
           <img
             className="h-14 w-14 object-cover rounded-lg"
             src="https://www.uber-assets.com/image/upload/f_auto,q_auto:eco,c_fill,h_368,w_552/v1648431773/assets/1d/db8c56-0204-4ce4-81ce-56a11a07fe98/original/Uber_Auto_558x372_pixels_Desktop.png"
-            alt="UberAuto"
+            alt="RydeAuto"
           />
           <div className="ml-4 flex-1">
             <h4 className="text-lg font-semibold text-gray-800">
-              UberAuto{" "}
+              RydeAuto{" "}
               <span className="text-gray-600 text-sm">
                 <i className="ri-user-3-fill"></i> 3
               </span>
