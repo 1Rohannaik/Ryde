@@ -30,8 +30,8 @@ exports.createRidePaymentSession = async (req, res) => {
         captainId,
       },
       mode: "payment",
-      success_url: "http://localhost:5173/home",
-      cancel_url: "http://localhost:5173/riding",
+      success_url: "https://ryde-frontend.onrender.com/home",
+      cancel_url: "https://ryde-frontend.onrender.com/riding",
     });
 
     res.status(200).json({ id: session.id });
