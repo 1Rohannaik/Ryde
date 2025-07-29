@@ -2,7 +2,6 @@
 const { DataTypes } = require("sequelize");
 const sequelize = require("../../lib/db"); // Your Sequelize instance
 
-
 const Ride = sequelize.define(
   "Ride",
   {
@@ -76,6 +75,5 @@ const Ride = sequelize.define(
     timestamps: true, // createdAt and updatedAt
   }
 );
-
 
 module.exports = Ride;

@@ -155,13 +155,13 @@ async function endRide({ rideId }) {
     include: [
       {
         model: User,
-        as: "user", 
-        attributes: ["id", "socketId", "firstname", "lastname"],
+        as: "user",
+        attributes: ["id", "socketId", "firstName", "lastName"], // ✅ PascalCase (based on User model)
       },
       {
         model: Captain,
-        as: "captain", 
-        attributes: ["id", "socketId", "firstname", "lastname"],
+        as: "captain",
+        attributes: ["id", "socketId", "firstname", "lastname"], // ✅ lowercase (based on Captain model)
       },
     ],
   });
@@ -180,9 +180,9 @@ async function endRide({ rideId }) {
   }
 
   await ride.save();
+
   return ride;
 }
-
 
 
 module.exports = {

@@ -126,32 +126,35 @@ module.exports = {
   },
 
   // 🧭 Get nearby captains using raw SQL and distance formula
-  getCaptainsInTheRadius: async (lat, lng, radius) => {
-    const earthRadius = 6371;
+getCaptainsInTheRadius: async (lat, lng, radius) => {
+  const earthRadius = 6371;
 
-    const query = `
-    SELECT *, (
-      ${earthRadius} * ACOS(
-        COS(RADIANS(:lat)) * COS(RADIANS(ltd)) * COS(RADIANS(lng) - RADIANS(:lng)) +
-        SIN(RADIANS(:lat)) * SIN(RADIANS(ltd))
-      )
-    ) AS distance
-    FROM Captains
-    HAVING distance <= :radius
+  const query = `
+    SELECT * FROM (
+      SELECT *, (
+        ${earthRadius} * ACOS(
+          COS(RADIANS(:lat)) * COS(RADIANS(ltd)) * COS(RADIANS(lng) - RADIANS(:lng)) +
+          SIN(RADIANS(:lat)) * SIN(RADIANS(ltd))
+        )
+      ) AS distance
+      FROM Captains
+    ) AS nearby
+    WHERE distance <= :radius
     ORDER BY distance ASC;
   `;
 
-    try {
-      const results = await sequelize.query(query, {
-        replacements: { lat, lng, radius },
-        type: QueryTypes.SELECT,
-      });
+  try {
+    const results = await sequelize.query(query, {
+      replacements: { lat, lng, radius },
+      type: QueryTypes.SELECT,
+    });
 
-      console.log("📍 Nearby captains found:", results);
-      return results;
-    } catch (error) {
-      console.error("❌ Error in getCaptainsInTheRadius:", error.message);
-      throw error;
-    }
-  },
+    console.log("📍 Nearby captains found:", results);
+    return results;
+  } catch (error) {
+    console.error("❌ Error in getCaptainsInTheRadius:", error.message);
+    throw error;
+  }
+}
+
 };
