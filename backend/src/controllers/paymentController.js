@@ -1,21 +1,13 @@
 const Stripe = require("stripe");
 const stripe = Stripe(process.env.STRIPE_SECRET_KEY);
 
+// controllers/paymentController.js
 exports.createRidePaymentSession = async (req, res) => {
   try {
     const { amount, rideId, captainId } = req.body;
 
     if (!amount || !rideId || !captainId) {
-      return res
-        .status(400)
-        .json({ error: "Missing required payment details" });
-    }
-
-    // ⚠️ Stripe minimum is ₹50 = 5000 paise
-    if (amount < 5000) {
-      return res.status(400).json({
-        error: "Minimum payment amount should be ₹50 (5000 paise)",
-      });
+      return res.status(400).json({ error: "Missing required payment details" });
     }
 
     const session = await stripe.checkout.sessions.create({
@@ -42,9 +34,10 @@ exports.createRidePaymentSession = async (req, res) => {
       cancel_url: "http://localhost:5173/riding",
     });
 
-    res.status(200).json({ id: session.id, url: session.url }); // return URL if you want to redirect
+    res.status(200).json({ id: session.id });
   } catch (error) {
     console.error("Stripe Ride Payment error:", error);
     res.status(500).json({ error: error.message });
   }
 };
+
