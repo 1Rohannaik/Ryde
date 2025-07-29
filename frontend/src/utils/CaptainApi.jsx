@@ -1,7 +1,7 @@
 // src/api/captainApi.jsx
 import axios from "axios";
 
-const BASE_URL = "http://localhost:3000/api/v1/captain"; // Adjust path if needed
+const BASE_URL = "https://ryde-backend-mr2s.onrender.com/api/v1/captain";
 
 // SIGNUP
 export const signupCaptain = async (formData) => {
