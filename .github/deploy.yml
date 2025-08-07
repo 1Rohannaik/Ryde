@@ -1,0 +1,30 @@
+name: 🚀 Deploy Ryde App
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 🧾 Checkout code
+        uses: actions/checkout@v3
+
+      - name: ⚙️ Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      - name: 🔐 Deploy Backend to Render
+        run: |
+          curl -X POST "${{ secrets.RENDER_BACKEND_HOOK }}"
+      
+      - name: ⏳ Wait for Backend to Start (Optional)
+        run: sleep 40
+      
+      - name: 🌐 Deploy Frontend to Render
+        run: |
+          curl -X POST "${{ secrets.RENDER_FRONTEND_HOOK }}"
