@@ -8,8 +8,8 @@ const SocketProvider = ({ children }) => {
   const [socket, setSocket] = useState(null);
 
   useEffect(() => {
-    const newSocket = io("https://ryde-backend-mr2s.onrender.com", {
-      transports: ["websocket"], // Use only websocket to prevent fallback issues
+    const newSocket = io("http://localhost:4000", {
+      transports: ["websocket"],
       withCredentials: true,
     });
 
@@ -31,8 +31,6 @@ const SocketProvider = ({ children }) => {
       newSocket.disconnect(); // Properly disconnect on unmount
     };
   }, []);
-
-
 
   return (
     <SocketContext.Provider value={{ socket }}>

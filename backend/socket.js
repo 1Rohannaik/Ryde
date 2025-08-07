@@ -8,7 +8,7 @@ let io;
 function initSocket(server) {
   io = socketIo(server, {
     cors: {
-      origin: "https://ryde-frontend.onrender.com",
+      origin: "http://localhost:5173",
       methods: ["GET", "POST"],
       credentials: true,
     },

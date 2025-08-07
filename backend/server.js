@@ -21,7 +21,7 @@ const paymentRoutes = require("./src/routes/paymentRoutes")
 // cors config
 app.use(
   cors({
-    origin: "https://ryde-frontend.onrender.com",
+    origin: "http://localhost:5173",
     credentials: true,
   })
 );
