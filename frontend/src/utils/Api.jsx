@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const BASE_URL = "http://localhost:4000/api/v1/users";
+const BASE_URL = "https://ryde-x7ux.onrender.com/api/v1/users";
 
 // SIGNUP
 export const signupUser = async (formData) => {

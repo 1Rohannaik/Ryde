@@ -8,7 +8,7 @@ const SocketProvider = ({ children }) => {
   const [socket, setSocket] = useState(null);
 
   useEffect(() => {
-    const newSocket = io("http://localhost:4000", {
+    const newSocket = io("https://ryde-x7ux.onrender.com", {
       transports: ["websocket"],
       withCredentials: true,
     });

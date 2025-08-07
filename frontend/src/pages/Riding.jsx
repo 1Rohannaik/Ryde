@@ -34,7 +34,7 @@ const Riding = () => {
 
     try {
       const res = await axios.post(
-        "http://localhost:4000/api/v1/payment/payment-ride",
+        "https://ryde-x7ux.onrender.com/api/v1/payment/payment-ride",
         {
           amount: ride?.fare * 100, // in paise
           rideId: ride?.id,
