@@ -5,10 +5,8 @@ const { QueryTypes } = require("sequelize");
 require("dotenv").config();
 
 const USER_AGENT = "Ryde/1.0 (rohannaik2299@gmail.com)";
-// ⚠️ Replace with your real contact email or website (required by Nominatim)
 
 module.exports = {
-  // 📍 Get coordinates from address using Nominatim
   getAddressCoordinate: async (address) => {
     const encodedAddress = encodeURIComponent(address);
     const url = `https://nominatim.openstreetmap.org/search?q=${encodedAddress}&format=json&limit=1`;

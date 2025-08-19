@@ -38,7 +38,9 @@ const UserLogin = () => {
     <div className="p-7 h-screen flex flex-col justify-between">
       {/* Logo positioned at top left */}
       <div className="absolute top-5 left-5">
-        <h1 className="text-2xl font-semibold text-black select-none">Ryde</h1>
+        <h1 className="text-3xl font-semibold text-black tracking-wide select-none pb-5">
+          Ryde
+        </h1>
       </div>
 
       <div className="mt-16">

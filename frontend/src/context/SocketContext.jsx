@@ -14,15 +14,15 @@ const SocketProvider = ({ children }) => {
     });
 
     newSocket.on("connect", () => {
-      console.log("✅ Socket connected:", newSocket.id);
+      console.log("Socket connected:", newSocket.id);
     });
 
     newSocket.on("disconnect", () => {
-      console.log("❌ Socket disconnected");
+      console.log("Socket disconnected");
     });
 
     newSocket.on("connect_error", (err) => {
-      console.error("❌ Connection error:", err.message);
+      console.error("Connection error:", err.message);
     });
 
     setSocket(newSocket);
