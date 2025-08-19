@@ -7,10 +7,12 @@ const generateTokenAndSetCookie = (user, res) => {
     { expiresIn: "1d" }
   );
 
+  const isProduction = process.env.NODE_ENV === "production";
+
   res.cookie("token", token, {
     httpOnly: true,
-    secure: true, 
-    sameSite: "None", 
+    secure: isProduction,
+    sameSite: isProduction ? "None" : "Lax",
     maxAge: 24 * 60 * 60 * 1000,
     path: "/",
   });
@@ -22,7 +24,7 @@ const generateCaptainTokenAndSetCookie = (captain, res) => {
   const payload = {
     id: captain.id,
     email: captain.email,
-    firstname: captain.firstname, 
+    firstname: captain.firstname,
     lastname: captain.lastname,
     fullName: `${captain.firstname || ""} ${captain.lastname || ""}`.trim(),
     vehicleColor: captain.vehicleColor,
@@ -33,22 +35,18 @@ const generateCaptainTokenAndSetCookie = (captain, res) => {
 
   const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: "1d" });
 
+  const isProduction = process.env.NODE_ENV === "production";
+
   res.cookie("captainToken", token, {
     httpOnly: true,
-    secure: true,
-    sameSite: "None",
+    secure: isProduction,
+    sameSite: isProduction ? "None" : "Lax",
     maxAge: 24 * 60 * 60 * 1000,
     path: "/",
   });
 
   return token;
 };
-
-
-
-
- 
-
 
 module.exports = {
   generateTokenAndSetCookie,

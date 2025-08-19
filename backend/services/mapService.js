@@ -4,6 +4,9 @@ const sequelize = require("../lib/db");
 const { QueryTypes } = require("sequelize");
 require("dotenv").config();
 
+const USER_AGENT = "Ryde/1.0 (rohannaik2299@gmail.com)";
+// ⚠️ Replace with your real contact email or website (required by Nominatim)
+
 module.exports = {
   // 📍 Get coordinates from address using Nominatim
   getAddressCoordinate: async (address) => {
@@ -12,7 +15,7 @@ module.exports = {
 
     try {
       const response = await axios.get(url, {
-        headers: { "User-Agent": "SheRyde-App" },
+        headers: { "User-Agent": USER_AGENT },
       });
 
       if (!response.data || response.data.length === 0) {
@@ -115,7 +118,7 @@ module.exports = {
 
     try {
       const response = await axios.get(url, {
-        headers: { "User-Agent": "SheRyde/1.0" },
+        headers: { "User-Agent": USER_AGENT },
       });
 
       return response.data.map((place) => place.display_name);
@@ -126,35 +129,34 @@ module.exports = {
   },
 
   // 🧭 Get nearby captains using raw SQL and distance formula
-getCaptainsInTheRadius: async (lat, lng, radius) => {
-  const earthRadius = 6371;
+  getCaptainsInTheRadius: async (lat, lng, radius) => {
+    const earthRadius = 6371;
 
-  const query = `
-    SELECT * FROM (
-      SELECT *, (
-        ${earthRadius} * ACOS(
-          COS(RADIANS(:lat)) * COS(RADIANS(ltd)) * COS(RADIANS(lng) - RADIANS(:lng)) +
-          SIN(RADIANS(:lat)) * SIN(RADIANS(ltd))
-        )
-      ) AS distance
-      FROM Captains
-    ) AS nearby
-    WHERE distance <= :radius
-    ORDER BY distance ASC;
-  `;
+    const query = `
+      SELECT * FROM (
+        SELECT *, (
+          ${earthRadius} * ACOS(
+            COS(RADIANS(:lat)) * COS(RADIANS(ltd)) * COS(RADIANS(lng) - RADIANS(:lng)) +
+            SIN(RADIANS(:lat)) * SIN(RADIANS(ltd))
+          )
+        ) AS distance
+        FROM Captains
+      ) AS nearby
+      WHERE distance <= :radius
+      ORDER BY distance ASC;
+    `;
 
-  try {
-    const results = await sequelize.query(query, {
-      replacements: { lat, lng, radius },
-      type: QueryTypes.SELECT,
-    });
+    try {
+      const results = await sequelize.query(query, {
+        replacements: { lat, lng, radius },
+        type: QueryTypes.SELECT,
+      });
 
-    console.log("📍 Nearby captains found:", results);
-    return results;
-  } catch (error) {
-    console.error("❌ Error in getCaptainsInTheRadius:", error.message);
-    throw error;
-  }
-}
-
+      console.log("📍 Nearby captains found:", results);
+      return results;
+    } catch (error) {
+      console.error("❌ Error in getCaptainsInTheRadius:", error.message);
+      throw error;
+    }
+  },
 };
