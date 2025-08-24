@@ -19,12 +19,11 @@ const isProduction = process.env.NODE_ENV === "production";
 
 app.use(
   cors({
-    origin: isProduction
-      ? "https://ryde-j1ba.onrender.com" 
-      : "http://localhost:5173", 
-    credentials: true, 
+    origin: "https://ryde-j1ba.onrender.com", 
+    credentials: true,
   })
 );
+
 
 // Middleware
 app.use(express.json());
