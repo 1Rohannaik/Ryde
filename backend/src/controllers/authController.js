@@ -25,7 +25,7 @@ const signup = async (req, res) => {
       password,
     });
 
-    generateTokenAndSetCookie(user, res); // set cookie only
+    generateTokenAndSetCookie(user, res);
 
     res.status(201).json({
       message: "User registered successfully",

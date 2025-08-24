@@ -12,7 +12,7 @@ const generateTokenAndSetCookie = (user, res) => {
   res.cookie("token", token, {
     httpOnly: true,
     secure: isProduction,
-    sameSite: isProduction ? "None" : "Lax",
+    sameSite: "None",
     maxAge: 24 * 60 * 60 * 1000,
     path: "/",
   });
@@ -40,7 +40,7 @@ const generateCaptainTokenAndSetCookie = (captain, res) => {
   res.cookie("captainToken", token, {
     httpOnly: true,
     secure: isProduction,
-    sameSite: isProduction ? "None" : "Lax",
+    sameSite:"None",
     maxAge: 24 * 60 * 60 * 1000,
     path: "/",
   });

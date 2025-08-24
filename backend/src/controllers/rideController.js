@@ -9,7 +9,7 @@ async function createRide(req, res) {
   // 1. Check for validation errors
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
-    console.log("❌ Validation errors:", errors.array());
+    console.log("Validation errors:", errors.array());
     return res.status(400).json({ errors: errors.array() });
   }
 

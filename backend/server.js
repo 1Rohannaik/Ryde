@@ -5,26 +5,24 @@ const cookieParser = require("cookie-parser");
 const cors = require("cors");
 const errorHandler = require("./lib/error");
 const sequelize = require("./lib/db");
-
 const { initSocket } = require("./socket");
 
 // Routes
-const mapRoutes = require("./src/routes/mapRoutes");
-const rideRoutes = require("./src/routes/rideRoutes");
 const authRoutes = require("./src/routes/authRoutes");
-const captainRoutes = require("./src/routes/captainRoutes");
-const paymentRoutes = require("./src/routes/paymentRoutes");
+const userRoutes = require("./src/routes/userRoutes");
 
 const app = express();
 const port = process.env.PORT || 3000;
 
-// CORS config for deployed frontend
+// CORS configuration
+const isProduction = process.env.NODE_ENV === "production";
+
 app.use(
   cors({
-    origin: "https://ryde-j1ba.onrender.com", 
+    origin: isProduction
+      ? "https://ryde-j1ba.onrender.com" 
+      : "http://localhost:5173", 
     credentials: true, 
-    methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
 
@@ -34,15 +32,12 @@ app.use(cookieParser());
 
 // Routes
 app.use("/api/v1/users", authRoutes);
-app.use("/api/v1/captain", captainRoutes);
-app.use("/api/v1/maps", mapRoutes);
-app.use("/api/v1/ride", rideRoutes);
-app.use("/api/v1/payment", paymentRoutes);
+app.use("/api/v1/profile", userRoutes);
 
 // Global error handler
 app.use(errorHandler);
 
-// Create server and init Socket.IO
+// Create HTTP server and initialize socket.io
 const server = http.createServer(app);
 initSocket(server);
 
