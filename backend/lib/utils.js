@@ -10,11 +10,11 @@ const generateTokenAndSetCookie = (user, res) => {
   const isProduction = process.env.NODE_ENV === "production";
 
   res.cookie("token", token, {
-    httpOnly: true,
-    secure: isProduction,
-    sameSite: isProduction ? "None" : "Lax",
-    maxAge: 24 * 60 * 60 * 1000,
-    path: "/",
+    httpOnly: true, // prevent XSS
+    secure: isProduction, // secure only in production (HTTPS)
+    sameSite: isProduction ? "None" : "Lax", // allow cross-site cookie in production
+    maxAge: 24 * 60 * 60 * 1000, // 1 day
+    path: "/", // cookie available everywhere
   });
 
   return token;
