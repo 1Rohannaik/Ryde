@@ -9,7 +9,7 @@ const { initSocket } = require("./socket");
 
 // Routes
 const authRoutes = require("./src/routes/authRoutes");
-const userRoutes = require("./src/routes/userRoutes");
+const userRoutes = require("./src/routes/authRoutes");
 
 const app = express();
 const port = process.env.PORT || 3000;
