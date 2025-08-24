@@ -41,10 +41,10 @@ app.use("/api/v1/payment", paymentRoutes);
 // Global error handler
 app.use(errorHandler);
 
-// ✅ Create server instance
+
 const server = http.createServer(app);
 
-// ✅ Initialize Socket.IO with this server
+
 initSocket(server);
 
 // Connect to DB and start HTTP + WebSocket server
