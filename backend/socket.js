@@ -4,14 +4,12 @@ const Captain = require("./src/model/captainModel");
 const Ride = require("./src/model/rideModel");
 
 let io;
+//ryde-j1ba.onrender.com
 
-function initSocket(server) {
+https: function initSocket(server) {
   io = socketIo(server, {
     cors: {
-      origin: [
-        "https://ryde-j1ba.onrender.com",
-        " https://ryde-j1ba.onrender.com/",
-      ],
+      origin: ["http://localhost:5173",],
       methods: ["GET", "POST"],
       credentials: true,
     },
