@@ -21,7 +21,7 @@ const paymentRoutes = require("./src/routes/paymentRoutes");
 // ✅ CORS config (important for cookies)
 app.use(
   cors({
-    origin: ["http://localhost:5173"],
+    origin: ["https://ryde-j1ba.onrender.com"],
     credentials: true,
   })
 );

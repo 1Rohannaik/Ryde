@@ -9,7 +9,7 @@ let io;
 https: function initSocket(server) {
   io = socketIo(server, {
     cors: {
-      origin: ["http://localhost:5173",],
+      origin: ["https://ryde-j1ba.onrender.com"],
       methods: ["GET", "POST"],
       credentials: true,
     },
