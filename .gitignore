@@ -40,8 +40,4 @@ coverage/
 # Misc
 *.tgz
 
-# Ignore all .lock files EXCEPT package-lock.json
-*.lock
-!package-lock.json
-!frontend/package-lock.json
-!backend/package-lock.json
+
