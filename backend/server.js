@@ -23,7 +23,7 @@ app.use(
   cors({
     origin: [
       "https://ryde-j1ba.onrender.com",
-      " https://ryde-j1ba.onrender.com",
+      " ",
     ],
     credentials: true,
   })
