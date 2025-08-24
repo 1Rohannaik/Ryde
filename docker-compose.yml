@@ -12,7 +12,10 @@ services:
       - ryde-network
 
   frontend:
-    build: ./frontend
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      platform: linux/amd64  
     ports:
       - "5173:4173"
     env_file:

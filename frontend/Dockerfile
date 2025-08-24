@@ -1,25 +1,26 @@
-FROM node:18
+# Use x64 Node to avoid ARM build issues on M1
+FROM --platform=linux/amd64 node:18
 
 WORKDIR /app
 
-# Copy package files
+# Copy package.json and package-lock.json first
 COPY package*.json ./
 
-# Install dependencies (force to avoid esbuild version issues)
-RUN npm install --force
+# Install dependencies with legacy peer deps to avoid conflicts
+RUN npm install --legacy-peer-deps
 
-# Copy the rest of the source code
+# Copy the rest of the code
 COPY . .
 
-# Rebuild esbuild for container
-RUN npm rebuild esbuild --force
-
-# Build Vite frontend
+# Build the frontend
 RUN npm run build
 
-# Install serve to serve the built files
+# Install serve globally
 RUN npm install -g serve
 
+# Expose the port
 EXPOSE 4173
 
+# Start the production server
 CMD ["serve", "-s", "dist", "-l", "4173"]
+
