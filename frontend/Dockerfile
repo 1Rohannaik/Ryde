@@ -2,22 +2,22 @@ FROM node:18
 
 WORKDIR /app
 
-# Copy package files first to leverage Docker cache
+# Copy package files
 COPY package*.json ./
 
-# Install dependencies and force esbuild to rebuild
+# Install dependencies (force to avoid esbuild version issues)
 RUN npm install --force
 
-# Copy rest of the frontend code
+# Copy the rest of the source code
 COPY . .
 
-# Optional: rebuild esbuild binary for Linux container
-RUN npm rebuild esbuild
+# Rebuild esbuild for container
+RUN npm rebuild esbuild --force
 
-# Build the Vite frontend
+# Build Vite frontend
 RUN npm run build
 
-# Install serve to serve static files
+# Install serve to serve the built files
 RUN npm install -g serve
 
 EXPOSE 4173
