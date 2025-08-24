@@ -4,7 +4,7 @@ services:
   backend:
     build: ./backend
     ports:
-      - "4000:3000"
+      - "3000:3000" 
     env_file:
       - ./backend/.env
     restart: unless-stopped
@@ -14,7 +14,7 @@ services:
   frontend:
     build: ./frontend
     ports:
-      - "5173:4173"
+      - "5173:4173" 
     env_file:
       - ./frontend/.env
     restart: unless-stopped
