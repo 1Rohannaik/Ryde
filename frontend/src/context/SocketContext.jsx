@@ -8,7 +8,7 @@ const SocketProvider = ({ children }) => {
   const [socket, setSocket] = useState(null);
 
   useEffect(() => {
-    // Extract the origin (e.g., http://localhost:3000) from the full base URL
+    // Extract the origin (e.g., https://ryde-x7ux.onrender.com) from the full base URL
     const socketUrl = new URL(import.meta.env.VITE_BASE_URL).origin;
 
     const newSocket = io(socketUrl, {

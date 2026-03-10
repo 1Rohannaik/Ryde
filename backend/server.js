@@ -23,8 +23,6 @@ app.use(
   cors({
     origin: [
       "https://ryde-j1ba.onrender.com",
-      "http://localhost:5173",
-      "http://localhost:5174",
     ],
     credentials: true,
   })
@@ -55,7 +53,7 @@ sequelize
   .then(() => {
     console.log("DB connected successfully");
     server.listen(port, () => {
-      console.log(`Server running at http://localhost:${port}`);
+      console.log(`Server running on port ${port}`);
     });
   })
   .catch((err) => {
