@@ -106,7 +106,6 @@ module.exports = {
     }
   },
 
-<<<<<<< HEAD
   // 🗺 Get route polyline logic
   getRoutePolyline: async (originStr, destinationStr) => {
     try {
@@ -152,8 +151,6 @@ module.exports = {
     }
   },
 
-=======
->>>>>>> 3cc71708bb7c79229436d7a537c5f06d411d5bed
   // 🔍 Autocomplete suggestions for places
   getAutoCompleteSuggestions: async (input) => {
     if (!input) throw new Error("Query is required");
@@ -166,7 +163,6 @@ module.exports = {
       const response = await axios.get(url, {
         headers: { "User-Agent": USER_AGENT },
       });
-<<<<<<< HEAD
       return response.data.map((place) => place.display_name);
     } catch (err) {
       console.error("❌ Error in getAutoCompleteSuggestions:", err.message);
@@ -174,12 +170,6 @@ module.exports = {
       if (err.response && (err.response.status === 403 || err.response.status === 429)) {
          return [];
       }
-=======
-
-      return response.data.map((place) => place.display_name);
-    } catch (err) {
-      console.error("❌ Error in getAutoCompleteSuggestions:", err.message);
->>>>>>> 3cc71708bb7c79229436d7a537c5f06d411d5bed
       throw err;
     }
   },
