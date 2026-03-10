@@ -2,11 +2,7 @@ import React from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import LiveTracking from "../components/LiveTracking";
 import { useSocket } from "../context/SocketContext";
-<<<<<<< HEAD
 import { useEffect, useState } from "react";
-=======
-import { useEffect } from "react";
->>>>>>> 3cc71708bb7c79229436d7a537c5f06d411d5bed
 import { loadStripe } from "@stripe/stripe-js";
 import axios from "axios";
 
@@ -15,7 +11,6 @@ const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY);
 
 const Riding = () => {
   const location = useLocation();
-<<<<<<< HEAD
   const { ride, pickupCoords, destinationCoords, routeCoords } = location.state || {};
   const navigate = useNavigate();
   const { socket } = useSocket();
@@ -24,11 +19,6 @@ const Riding = () => {
       ? { lat: ride.captain.ltd, lng: ride.captain.lng }
       : null
   );
-=======
-  const { ride } = location.state || {};
-  const navigate = useNavigate();
-  const { socket } = useSocket();
->>>>>>> 3cc71708bb7c79229436d7a537c5f06d411d5bed
 
   useEffect(() => {
     if (!socket) return;
@@ -37,7 +27,6 @@ const Riding = () => {
       navigate("/home");
     };
 
-<<<<<<< HEAD
     const handleCaptainLocationUpdate = (data) => {
       // console.log("Captain location update in Riding:", data);
       if (data && data.location) {
@@ -54,12 +43,6 @@ const Riding = () => {
     return () => {
       socket.off("ride-ended", handleRideEnded);
       socket.off("captain-location-update", handleCaptainLocationUpdate);
-=======
-    socket.on("ride-ended", handleRideEnded);
-
-    return () => {
-      socket.off("ride-ended", handleRideEnded);
->>>>>>> 3cc71708bb7c79229436d7a537c5f06d411d5bed
     };
   }, [socket, navigate]);
 
@@ -68,11 +51,7 @@ const Riding = () => {
 
     try {
       const res = await axios.post(
-<<<<<<< HEAD
         `${import.meta.env.VITE_BASE_URL}/payment/payment-ride`,
-=======
-        " https://ryde-x7ux.onrender.com/api/v1/payment/payment-ride",
->>>>>>> 3cc71708bb7c79229436d7a537c5f06d411d5bed
         {
           amount: ride?.fare * 100,
           rideId: ride?.id,
@@ -113,7 +92,6 @@ const Riding = () => {
 
       {/* Map Section */}
       <div className="h-3/5 bg-gray-200 relative z-0">
-<<<<<<< HEAD
         <LiveTracking 
           pickupCoords={pickupCoords}
           destinationCoords={destinationCoords}
@@ -121,9 +99,6 @@ const Riding = () => {
           captainLocation={captainLocation}
           showRoute={true}
         />
-=======
-        <LiveTracking />
->>>>>>> 3cc71708bb7c79229436d7a537c5f06d411d5bed
       </div>
 
       {/* Ride Info Section */}

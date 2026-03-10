@@ -1,11 +1,7 @@
 // src/api/captainApi.jsx
 import axios from "axios";
 
-<<<<<<< HEAD
 const BASE_URL = `${import.meta.env.VITE_BASE_URL}/captain`;
-=======
-const BASE_URL = "https://ryde-x7ux.onrender.com/api/v1/captain";
->>>>>>> 3cc71708bb7c79229436d7a537c5f06d411d5bed
 
 // SIGNUP
 export const signupCaptain = async (formData) => {
