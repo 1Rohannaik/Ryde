@@ -14,11 +14,7 @@ services:
   frontend:
     build: ./frontend
     ports:
-<<<<<<< HEAD
       - "5174:4173" 
-=======
-      - "5173:4173" 
->>>>>>> 3cc71708bb7c79229436d7a537c5f06d411d5bed
     env_file:
       - ./frontend/.env
     restart: unless-stopped
