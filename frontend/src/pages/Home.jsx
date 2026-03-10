@@ -139,7 +139,7 @@ const Home = () => {
         console.error("Pickup suggestion error:", error);
         setPickupSuggestions([]);
       }
-    }, 800); 
+    }, 2000); 
   };
 
   const handleDestinationChange = async (e) => {
