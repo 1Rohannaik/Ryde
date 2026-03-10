@@ -48,7 +48,6 @@ const getAutoCompleteSuggestions = async (req, res) => {
     res.status(200).json(suggestions);
   } catch (err) {
     console.error("Error in getAutoCompleteSuggestions:", err.message);
-<<<<<<< HEAD
     res.status(200).json([]); // Fallback to empty array on rate limits
   }
 };
@@ -67,9 +66,7 @@ const getRoute = async (req, res) => {
   } catch (err) {
     console.error("Error in getRoute:", err.message);
     res.status(500).json({ message: "Internal server error fetching route" });
-=======
     res.status(500).json({ message: "Internal server error" });
->>>>>>> 3cc71708bb7c79229436d7a537c5f06d411d5bed
   }
 };
 
@@ -77,8 +74,6 @@ module.exports = {
   getCoordinates,
   getDistanceTime,
   getAutoCompleteSuggestions,
-<<<<<<< HEAD
+
   getRoute,
-=======
->>>>>>> 3cc71708bb7c79229436d7a537c5f06d411d5bed
 };
