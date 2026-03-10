@@ -6,6 +6,10 @@ require("dotenv").config();
 
 const USER_AGENT = "Ryde/1.0 (rohannaik2299@gmail.com)";
 
+// 💡 Simple In-Memory Cache for Autocomplete
+const autocompleteCache = new Map();
+const CACHE_TTL = 1000 * 60 * 60; // 1 Hour
+
 module.exports = {
   getAddressCoordinate: async (address) => {
     const encodedAddress = encodeURIComponent(address);
@@ -155,6 +159,18 @@ module.exports = {
   getAutoCompleteSuggestions: async (input) => {
     if (!input) throw new Error("Query is required");
 
+    // Check cache first
+    const cacheKey = input.toLowerCase().trim();
+    if (autocompleteCache.has(cacheKey)) {
+      const cached = autocompleteCache.get(cacheKey);
+      if (Date.now() - cached.timestamp < CACHE_TTL) {
+        console.log(`⚡ Serving autocomplete from cache for: ${input}`);
+        return cached.data;
+      } else {
+        autocompleteCache.delete(cacheKey); // clear expired
+      }
+    }
+
     const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(
       input
     )}&format=json&addressdetails=1&limit=5`;
@@ -163,7 +179,15 @@ module.exports = {
       const response = await axios.get(url, {
         headers: { "User-Agent": USER_AGENT },
       });
-      return response.data.map((place) => place.display_name);
+      const suggestions = response.data.map((place) => place.display_name);
+
+      // Store in simple cache
+      autocompleteCache.set(cacheKey, {
+        data: suggestions,
+        timestamp: Date.now(),
+      });
+
+      return suggestions;
     } catch (err) {
       console.error("❌ Error in getAutoCompleteSuggestions:", err.message);
       // Nominatim rate limits heavily (403 or 429). Instead of 500, return empty array to UI gracefully.

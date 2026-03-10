@@ -118,8 +118,14 @@ const Home = () => {
       clearTimeout(pickupTimeoutRef.current);
     }
 
-    // Set a new timeout
+    // Set a new timeout (debounce 800ms)
     pickupTimeoutRef.current = setTimeout(async () => {
+      // Only fetch autocomplete if length is 3 or more
+      if (value.length < 3) {
+        setPickupSuggestions([]);
+        return;
+      }
+
       try {
         const response = await axios.get(
           `${import.meta.env.VITE_BASE_URL}/maps/autocomplete`,
@@ -133,7 +139,7 @@ const Home = () => {
         console.error("Pickup suggestion error:", error);
         setPickupSuggestions([]);
       }
-    }, 500); // 500ms delay
+    }, 800); 
   };
 
   const handleDestinationChange = async (e) => {
@@ -145,8 +151,14 @@ const Home = () => {
       clearTimeout(destinationTimeoutRef.current);
     }
 
-    // Set a new timeout
+    // Set a new timeout (debounce 800ms)
     destinationTimeoutRef.current = setTimeout(async () => {
+      // Only fetch autocomplete if length is 3 or more
+      if (value.length < 3) {
+        setDestinationSuggestions([]);
+        return;
+      }
+
       try {
         const response = await axios.get(
           `${import.meta.env.VITE_BASE_URL}/maps/autocomplete`,
@@ -160,7 +172,7 @@ const Home = () => {
         console.error("Destination suggestion error:", error);
         setDestinationSuggestions([]);
       }
-    }, 500); // 500ms delay
+    }, 800);
   };
 
   const findTrip = async () => {
