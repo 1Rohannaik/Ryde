@@ -8,10 +8,14 @@ const SocketProvider = ({ children }) => {
   const [socket, setSocket] = useState(null);
 
   useEffect(() => {
+<<<<<<< HEAD
     // Extract the origin (e.g., http://localhost:3000) from the full base URL
     const socketUrl = new URL(import.meta.env.VITE_BASE_URL).origin;
 
     const newSocket = io(socketUrl, {
+=======
+    const newSocket = io("https://ryde-x7ux.onrender.com", {
+>>>>>>> 3cc71708bb7c79229436d7a537c5f06d411d5bed
       transports: ["websocket"],
       withCredentials: true,
     });

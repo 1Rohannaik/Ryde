@@ -92,6 +92,7 @@ const CaptainProtected = async (req, res, next) => {
   }
 };
 
+<<<<<<< HEAD
 const authUserOrCaptain = async (req, res, next) => {
   try {
     const userToken = req.cookies?.token;
@@ -127,3 +128,6 @@ const authUserOrCaptain = async (req, res, next) => {
 };
 
 module.exports = { CaptainProtected, protected, authUserOrCaptain };
+=======
+module.exports = { CaptainProtected, protected };
+>>>>>>> 3cc71708bb7c79229436d7a537c5f06d411d5bed

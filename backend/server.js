@@ -23,8 +23,11 @@ app.use(
   cors({
     origin: [
       "https://ryde-j1ba.onrender.com",
+<<<<<<< HEAD
       "http://localhost:5173",
       "http://localhost:5174",
+=======
+>>>>>>> 3cc71708bb7c79229436d7a537c5f06d411d5bed
     ],
     credentials: true,
   })

@@ -1,23 +1,33 @@
+<<<<<<< HEAD
 import React, { useRef, useState, useEffect } from "react";
+=======
+import React, { useRef, useState } from "react";
+>>>>>>> 3cc71708bb7c79229436d7a537c5f06d411d5bed
 import { Link, useLocation } from "react-router-dom";
 import FinishRide from "../components/FinnishRide";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import LiveTracking from "../components/LiveTracking";
+<<<<<<< HEAD
 import { useSocket } from "../context/SocketContext";
 import axios from "axios";
+=======
+>>>>>>> 3cc71708bb7c79229436d7a537c5f06d411d5bed
 
 const CaptainRiding = () => {
   const [finishRidePanel, setFinishRidePanel] = useState(false);
   const finishRidePanelRef = useRef(null);
   const location = useLocation();
   const rideData = location.state?.ride;
+<<<<<<< HEAD
   const { socket } = useSocket();
   const [captainLocation, setCaptainLocation] = useState(null);
   const [pickupCoords, setPickupCoords] = useState(null);
   const [destinationCoords, setDestinationCoords] = useState(null);
   const [routeCoords, setRouteCoords] = useState([]);
   const [showRoute, setShowRoute] = useState(false);
+=======
+>>>>>>> 3cc71708bb7c79229436d7a537c5f06d411d5bed
 
   useGSAP(
     function () {
@@ -33,6 +43,7 @@ const CaptainRiding = () => {
     },
     [finishRidePanel]
   );
+<<<<<<< HEAD
   
   useEffect(() => {
     // Get captain coordinates and route on mount
@@ -110,6 +121,8 @@ const CaptainRiding = () => {
       navigator.geolocation.clearWatch(watchId);
     };
   }, []);
+=======
+>>>>>>> 3cc71708bb7c79229436d7a537c5f06d411d5bed
 
   return (
     <div className="h-screen relative flex flex-col justify-end z-10">
@@ -150,6 +163,7 @@ const CaptainRiding = () => {
       </div>
 
       <div className="h-screen fixed w-screen top-0 z-[-1]">
+<<<<<<< HEAD
         <LiveTracking 
           pickupCoords={pickupCoords}
           destinationCoords={destinationCoords}
@@ -157,6 +171,9 @@ const CaptainRiding = () => {
           showRoute={showRoute}
           captainLocation={captainLocation}
         />
+=======
+        <LiveTracking />
+>>>>>>> 3cc71708bb7c79229436d7a537c5f06d411d5bed
       </div>
     </div>
   );

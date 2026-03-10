@@ -27,6 +27,7 @@ const Home = () => {
   const [fare, setFare] = useState({});
   const [vehicleType, setVehicleType] = useState(null);
   const [ride, setRide] = useState(null);
+<<<<<<< HEAD
   
   // Map Data State
   const [pickupCoords, setPickupCoords] = useState(null);
@@ -38,6 +39,8 @@ const Home = () => {
   // Debounce refs
   const pickupTimeoutRef = useRef(null);
   const destinationTimeoutRef = useRef(null);
+=======
+>>>>>>> 3cc71708bb7c79229436d7a537c5f06d411d5bed
 
   const vehiclePanelRef = useRef(null);
   const confirmRidePanelRef = useRef(null);
@@ -66,6 +69,7 @@ const Home = () => {
     const handleRideConfirmed = (ride) => {
       setRide(ride);
       setWaitingForDriver(true);
+<<<<<<< HEAD
       if (ride.captain && ride.captain.ltd && ride.captain.lng) {
         setCaptainLocation({ lat: ride.captain.ltd, lng: ride.captain.lng });
       }
@@ -87,6 +91,14 @@ const Home = () => {
     return () => {
       socket.off("ride-confirmed", handleRideConfirmed);
       socket.off("captain-location-update", handleCaptainLocationUpdate);
+=======
+    };
+
+    socket.on("ride-confirmed", handleRideConfirmed);
+
+    return () => {
+      socket.off("ride-confirmed", handleRideConfirmed);
+>>>>>>> 3cc71708bb7c79229436d7a537c5f06d411d5bed
     };
   }, [socket]);
 
@@ -94,6 +106,7 @@ const Home = () => {
     socket.on("ride-started", (ride) => {
       console.log("Ride started:", ride);
       setWaitingForDriver(false);
+<<<<<<< HEAD
       navigate("/riding", { 
         state: { 
           ride,
@@ -102,16 +115,24 @@ const Home = () => {
           routeCoords
         } 
       });
+=======
+      navigate("/riding", { state: { ride } });
+>>>>>>> 3cc71708bb7c79229436d7a537c5f06d411d5bed
     });
 
     return () => {
       socket.off("ride-started");
     };
+<<<<<<< HEAD
   }, [navigate, pickupCoords, destinationCoords, routeCoords]);
+=======
+  }, []);
+>>>>>>> 3cc71708bb7c79229436d7a537c5f06d411d5bed
 
   const handlePickupChange = async (e) => {
     const value = e.target.value;
     setPickup(value);
+<<<<<<< HEAD
     
     // Clear the previous timeout
     if (pickupTimeoutRef.current) {
@@ -134,11 +155,27 @@ const Home = () => {
         setPickupSuggestions([]);
       }
     }, 500); // 500ms delay
+=======
+    try {
+      const response = await axios.get(
+        `${import.meta.env.VITE_BASE_URL}/maps/autocomplete`,
+        {
+          params: { input: value },
+          withCredentials: true,
+        }
+      );
+      setPickupSuggestions(response.data);
+    } catch (error) {
+      console.error("Pickup suggestion error:", error);
+      setPickupSuggestions([]);
+    }
+>>>>>>> 3cc71708bb7c79229436d7a537c5f06d411d5bed
   };
 
   const handleDestinationChange = async (e) => {
     const value = e.target.value;
     setDestination(value);
+<<<<<<< HEAD
 
     // Clear the previous timeout
     if (destinationTimeoutRef.current) {
@@ -161,6 +198,21 @@ const Home = () => {
         setDestinationSuggestions([]);
       }
     }, 500); // 500ms delay
+=======
+    try {
+      const response = await axios.get(
+        `${import.meta.env.VITE_BASE_URL}/maps/autocomplete`,
+        {
+          params: { input: value },
+          withCredentials: true,
+        }
+      );
+      setDestinationSuggestions(response.data);
+    } catch (error) {
+      console.error("Destination suggestion error:", error);
+      setDestinationSuggestions([]);
+    }
+>>>>>>> 3cc71708bb7c79229436d7a537c5f06d411d5bed
   };
 
   const findTrip = async () => {
@@ -175,6 +227,7 @@ const Home = () => {
     setPanelOpen(false);
 
     try {
+<<<<<<< HEAD
       // First try to geocode both pickup and destination
       let pCoords, dCoords;
       try {
@@ -214,6 +267,8 @@ const Home = () => {
       }
 
       // Then get the fare
+=======
+>>>>>>> 3cc71708bb7c79229436d7a537c5f06d411d5bed
       const response = await axios.get(
         `${import.meta.env.VITE_BASE_URL}/ride/get-fare`,
         {
@@ -325,6 +380,7 @@ const Home = () => {
         }}
       >
         <div style={{ height: "100%", width: "100%", pointerEvents: "auto" }}>
+<<<<<<< HEAD
           <LiveTracking 
             pickupCoords={pickupCoords}
             destinationCoords={destinationCoords}
@@ -332,6 +388,9 @@ const Home = () => {
             showRoute={showRoute}
             captainLocation={captainLocation}
           />
+=======
+          <LiveTracking />
+>>>>>>> 3cc71708bb7c79229436d7a537c5f06d411d5bed
         </div>
       </div>
 

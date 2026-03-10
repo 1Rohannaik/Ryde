@@ -6,6 +6,7 @@ const Ride = require("./src/model/rideModel");
 let io;
 //ryde-j1ba.onrender.com
 
+<<<<<<< HEAD
 function initSocket(server) {
   io = socketIo(server, {
     cors: {
@@ -14,6 +15,12 @@ function initSocket(server) {
         "http://localhost:5173",
         "http://localhost:5174",
       ],
+=======
+https: function initSocket(server) {
+  io = socketIo(server, {
+    cors: {
+      origin: ["https://ryde-j1ba.onrender.com"],
+>>>>>>> 3cc71708bb7c79229436d7a537c5f06d411d5bed
       methods: ["GET", "POST"],
       credentials: true,
     },
@@ -72,6 +79,7 @@ function initSocket(server) {
           }
         );
 
+<<<<<<< HEAD
         console.log(`✅ Captain ${userId} location updated in DB`);
 
         // Find active ride for this captain to broadcast location to the user
@@ -94,6 +102,9 @@ function initSocket(server) {
           // console.log(`📍 Broadcasted captain ${userId} location to user ${activeRide.user.id}`);
         }
 
+=======
+        console.log(`✅ Captain ${userId} location updated`);
+>>>>>>> 3cc71708bb7c79229436d7a537c5f06d411d5bed
       } catch (error) {
         console.error("❌ Error updating captain location:", error);
         socket.emit("error", { message: "Failed to update location" });

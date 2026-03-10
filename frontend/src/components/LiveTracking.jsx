@@ -1,5 +1,9 @@
 import React, { useEffect, useState } from "react";
+<<<<<<< HEAD
 import { MapContainer, TileLayer, Marker, Polyline, useMap } from "react-leaflet";
+=======
+import { MapContainer, TileLayer, Marker, useMap } from "react-leaflet";
+>>>>>>> 3cc71708bb7c79229436d7a537c5f06d411d5bed
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 
@@ -12,6 +16,7 @@ L.Icon.Default.mergeOptions({
   shadowUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png",
 });
 
+<<<<<<< HEAD
 // Custom Icons
 const createColorIcon = (color) => {
   return new L.Icon({
@@ -63,10 +68,28 @@ const LiveTracking = ({
   useEffect(() => {
     // Some browsers (like desktop Chrome) violently reject watchPosition if highAccuracy 
     // or tight timeouts are used incorrectly. The safest fallback is a simple watch.
+=======
+// Component to recenter the map when position updates
+const RecenterMap = ({ position }) => {
+  const map = useMap();
+  useEffect(() => {
+    if (position) {
+      map.setView(position);
+    }
+  }, [position, map]);
+  return null;
+};
+
+const LiveTracking = () => {
+  const [position, setPosition] = useState(null);
+
+  useEffect(() => {
+>>>>>>> 3cc71708bb7c79229436d7a537c5f06d411d5bed
     const watchId = navigator.geolocation.watchPosition(
       (pos) => {
         const { latitude, longitude } = pos.coords;
         setPosition({ lat: latitude, lng: longitude });
+<<<<<<< HEAD
       },
       (err) => {
         console.error(`LiveTracking Geolocation Error (${err.code}):`, err.message);
@@ -140,6 +163,41 @@ const LiveTracking = ({
           showRoute={showRoute}
         />
       </MapContainer>
+=======
+        console.log("Current position:", latitude, longitude);
+      },
+      (err) => {
+        console.error("Error getting location:", err);
+      },
+      {
+        enableHighAccuracy: true,
+        maximumAge: 0,
+        timeout: 10000,
+      }
+    );
+
+    return () => navigator.geolocation.clearWatch(watchId);
+  }, []);
+
+  return (
+    <div style={{ height: "100vh", width: "100%" }}>
+      {position && (
+        <MapContainer
+          center={position}
+          zoom={15}
+          scrollWheelZoom={true}
+          zoomControl={true}
+          style={{ height: "80%", width: "100%" }}
+        >
+          <TileLayer
+            attribution='&copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors'
+            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+          />
+          <Marker position={position} />
+          <RecenterMap position={position} />
+        </MapContainer>
+      )}
+>>>>>>> 3cc71708bb7c79229436d7a537c5f06d411d5bed
     </div>
   );
 };
