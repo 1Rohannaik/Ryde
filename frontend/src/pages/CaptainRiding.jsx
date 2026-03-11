@@ -39,33 +39,21 @@ const CaptainRiding = () => {
     const fetchRouteData = async () => {
        if (!rideData) return;
        try {
-         // Get the token from localStorage or context if you have it.
-         // Assuming it's in localStorage under "token"
-         const token = localStorage.getItem("token");
-
          // Geocode pickup
          const pRes = await axios.get(`${import.meta.env.VITE_BASE_URL}/maps/coordinates`, {
            params: { address: rideData.pickup },
-           headers: { Authorization: `Bearer ${token}` },
            withCredentials: true,
          });
          const pCoords = pRes.data;
          setPickupCoords(pCoords);
-         
-         // Add delay for Nominatim rate limits (max 1 hit per second)
-         await new Promise(resolve => setTimeout(resolve, 1000));
 
          // Geocode destination
          const dRes = await axios.get(`${import.meta.env.VITE_BASE_URL}/maps/coordinates`, {
            params: { address: rideData.destination },
-           headers: { Authorization: `Bearer ${token}` },
            withCredentials: true,
          });
          const dCoords = dRes.data;
          setDestinationCoords(dCoords);
-
-         // Add delay for ORS rate limits
-         await new Promise(resolve => setTimeout(resolve, 1000));
 
          // Fetch Route
          if (pCoords && dCoords) {
@@ -74,7 +62,6 @@ const CaptainRiding = () => {
                origin: `${pCoords.lat},${pCoords.lng}`, 
                destination: `${dCoords.lat},${dCoords.lng}` 
              },
-             headers: { Authorization: `Bearer ${token}` },
              withCredentials: true,
            });
            setRouteCoords(rRes.data);
