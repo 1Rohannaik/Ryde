@@ -10,10 +10,13 @@ const USER_AGENT = "Ryde/1.0 (rohannaik2299@gmail.com)";
 const autocompleteCache = new Map();
 const CACHE_TTL = 1000 * 60 * 60; // 1 Hour
 
+// 📍 Location bias for Photon API (centered on Bangalore, India)
+const LOCATION_BIAS = { lat: 12.9716, lon: 77.5946 };
+
 module.exports = {
   getAddressCoordinate: async (address) => {
     const encodedAddress = encodeURIComponent(address);
-    const url = `https://photon.komoot.io/api/?q=${encodedAddress}&limit=1`;
+    const url = `https://photon.komoot.io/api/?q=${encodedAddress}&limit=1&lat=${LOCATION_BIAS.lat}&lon=${LOCATION_BIAS.lon}`;
 
     try {
       const response = await axios.get(url, {
@@ -174,7 +177,7 @@ module.exports = {
 
     const url = `https://photon.komoot.io/api/?q=${encodeURIComponent(
       input
-    )}&limit=5`;
+    )}&limit=5&lat=${LOCATION_BIAS.lat}&lon=${LOCATION_BIAS.lon}`;
 
     try {
       const response = await axios.get(url, {
