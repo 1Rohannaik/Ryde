@@ -139,7 +139,7 @@ const Home = () => {
         console.error("Pickup suggestion error:", error);
         setPickupSuggestions([]);
       }
-    }, 2000); 
+    }, 800); 
   };
 
   const handleDestinationChange = async (e) => {
@@ -197,16 +197,12 @@ const Home = () => {
         pCoords = pRes.data;
         setPickupCoords(pCoords);
         
-        await new Promise(resolve => setTimeout(resolve, 1000));
-
         const dRes = await axios.get(`${import.meta.env.VITE_BASE_URL}/maps/coordinates`, {
           params: { address: destination },
           withCredentials: true,
         });
         dCoords = dRes.data;
         setDestinationCoords(dCoords);
-
-        await new Promise(resolve => setTimeout(resolve, 1000));
 
         // If we got both coordinates, fetch the route
         if (pCoords && dCoords) {
