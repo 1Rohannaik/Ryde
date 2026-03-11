@@ -13,21 +13,22 @@ const CACHE_TTL = 1000 * 60 * 60; // 1 Hour
 module.exports = {
   getAddressCoordinate: async (address) => {
     const encodedAddress = encodeURIComponent(address);
-    const url = `https://nominatim.openstreetmap.org/search?q=${encodedAddress}&format=json&limit=1`;
+    const url = `https://photon.komoot.io/api/?q=${encodedAddress}&limit=1`;
 
     try {
       const response = await axios.get(url, {
         headers: { "User-Agent": USER_AGENT },
       });
 
-      if (!response.data || response.data.length === 0) {
+      if (!response.data || !response.data.features || response.data.features.length === 0) {
         throw new Error("Address not found");
       }
 
-      const place = response.data[0];
+      const feature = response.data.features[0];
+      const [lng, lat] = feature.geometry.coordinates;
       return {
-        lat: parseFloat(place.lat),
-        lng: parseFloat(place.lon),
+        lat: parseFloat(lat),
+        lng: parseFloat(lng),
       };
     } catch (error) {
       console.error("❌ Error in getAddressCoordinate:", error.message);
