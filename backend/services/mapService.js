@@ -171,15 +171,20 @@ module.exports = {
       }
     }
 
-    const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(
+    const url = `https://photon.komoot.io/api/?q=${encodeURIComponent(
       input
-    )}&format=json&addressdetails=1&limit=5`;
+    )}&limit=5`;
 
     try {
       const response = await axios.get(url, {
         headers: { "User-Agent": USER_AGENT },
       });
-      const suggestions = response.data.map((place) => place.display_name);
+      
+      const suggestions = response.data.features.map((feature) => {
+        const p = feature.properties;
+        const parts = [p.name, p.street, p.city, p.state, p.country].filter(Boolean);
+        return [...new Set(parts)].join(", ");
+      });
 
       // Store in simple cache
       autocompleteCache.set(cacheKey, {
@@ -190,7 +195,7 @@ module.exports = {
       return suggestions;
     } catch (err) {
       console.error("❌ Error in getAutoCompleteSuggestions:", err.message);
-      // Nominatim rate limits heavily (403 or 429). Instead of 500, return empty array to UI gracefully.
+      // Fallback for API limits/errors. Instead of 500, return empty array to UI gracefully.
       if (err.response && (err.response.status === 403 || err.response.status === 429)) {
          return [];
       }
