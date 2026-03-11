@@ -99,7 +99,7 @@ const authUserOrCaptain = async (req, res, next) => {
     const authHeader = req.headers.authorization;
     
     // Check header if cookie is missing (for flexibility)
-    let finalToken = userToken || captainToken;
+    let finalToken = captainToken || userToken;
     if (!finalToken && authHeader && authHeader.startsWith('Bearer ')) {
       finalToken = authHeader.split(' ')[1];
     }
