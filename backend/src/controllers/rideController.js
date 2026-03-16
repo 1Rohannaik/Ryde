@@ -86,11 +86,19 @@ async function getFare(req, res) {
 
   try {
     const { pickup, destination } = req.query;
+    
+    if (!pickup || !destination) {
+      return res.status(400).json({ success: false, message: "Pickup and destination are required" });
+    }
+    
     const fare = await rideService.getFare(pickup, destination);
     return res.status(200).json({ success: true, fare });
   } catch (error) {
-    console.error("Error in getFare:", error);
-    return res.status(500).json({ success: false, message: error.message });
+    console.error("Error in getFare:", error.message || error);
+    return res.status(500).json({ 
+      success: false, 
+      message: `Failed to calculate fare: ${error.message || "Unknown error"}` 
+    });
   }
 }
 
