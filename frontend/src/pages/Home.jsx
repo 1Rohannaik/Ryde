@@ -226,8 +226,8 @@ const Home = () => {
         `${import.meta.env.VITE_BASE_URL}/ride/get-fare`,
         {
           params: {
-            pickup: encodeURIComponent(pickup),
-            destination: encodeURIComponent(destination),
+            pickup,
+            destination,
           },
           withCredentials: true,
         }
