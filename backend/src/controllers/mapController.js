@@ -65,8 +65,15 @@ const getRoute = async (req, res) => {
     res.status(200).json(polyline);
   } catch (err) {
     console.error("Error in getRoute:", err.message);
+    // Return a straight-line fallback so the frontend doesn't break
+    try {
+      const [startLat, startLng] = origin.split(",").map(Number);
+      const [endLat, endLng] = destination.split(",").map(Number);
+      if (!isNaN(startLat) && !isNaN(startLng) && !isNaN(endLat) && !isNaN(endLng)) {
+        return res.status(200).json([[startLat, startLng], [endLat, endLng]]);
+      }
+    } catch (_) {}
     res.status(500).json({ message: "Internal server error fetching route" });
-    res.status(500).json({ message: "Internal server error" });
   }
 };
 
