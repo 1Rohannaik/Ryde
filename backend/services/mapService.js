@@ -15,23 +15,29 @@ const LOCATION_BIAS = { lat: 12.9716, lon: 77.5946 };
 
 module.exports = {
   getAddressCoordinate: async (address) => {
-    const encodedAddress = encodeURIComponent(address);
-    const url = `https://photon.komoot.io/api/?q=${encodedAddress}&limit=1&lat=${LOCATION_BIAS.lat}&lon=${LOCATION_BIAS.lon}`;
-
     try {
-      const response = await axios.get(url, {
-        headers: { "User-Agent": USER_AGENT },
-      });
+      const response = await axios.get(
+        "https://api.geoapify.com/v1/geocode/search",
+        {
+          params: {
+            text: address,
+            filter: "countrycode:in",
+            bias: `proximity:${LOCATION_BIAS.lon},${LOCATION_BIAS.lat}`,
+            limit: 1,
+            apiKey: process.env.GEOAPIFY_API_KEY,
+          },
+          timeout: 8000,
+        }
+      );
 
       if (!response.data || !response.data.features || response.data.features.length === 0) {
         throw new Error("Address not found");
       }
 
-      const feature = response.data.features[0];
-      const [lng, lat] = feature.geometry.coordinates;
+      const { lat, lon } = response.data.features[0].properties;
       return {
         lat: parseFloat(lat),
-        lng: parseFloat(lng),
+        lng: parseFloat(lon),
       };
     } catch (error) {
       console.error("❌ Error in getAddressCoordinate:", error.message);
