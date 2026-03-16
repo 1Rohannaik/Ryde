@@ -245,9 +245,17 @@ module.exports = {
         return [];
       }
 
-      const suggestions = response.data.features.map((feature) => {
-        return feature.properties.formatted || feature.properties.name || "";
-      }).filter(Boolean);
+      const suggestions = response.data.features
+        .map((feature) => {
+          const p = feature.properties;
+          return {
+            name: p.name || p.address_line1 || "",
+            formatted_address: p.formatted || "",
+            lat: p.lat,
+            lon: p.lon,
+          };
+        })
+        .filter((s) => s.name && s.lat && s.lon);
 
       // Store in simple cache
       autocompleteCache.set(cacheKey, {
