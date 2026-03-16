@@ -9,12 +9,6 @@ const LocationSearchPanel = ({
   activeField,
   isLoading = false,
 }) => {
-  console.log("LocationSearchPanel rendered with props:", {
-    suggestions,
-    activeField,
-    isLoading,
-  });
-
   const handleSuggestionClick = (suggestion) => {
     console.log("Suggestion clicked:", suggestion);
     if (activeField === "pickup") {
@@ -22,7 +16,6 @@ const LocationSearchPanel = ({
     } else if (activeField === "destination") {
       setDestination(suggestion);
     }
-    setVehiclePanel(true);
     setPanelOpen(false);
   };
 
@@ -31,6 +24,17 @@ const LocationSearchPanel = ({
       e.preventDefault();
       handleSuggestionClick(suggestion);
     }
+  };
+
+  // Get display text from suggestion (handles both string and object formats)
+  const getDisplayName = (suggestion) => {
+    if (typeof suggestion === "string") return suggestion;
+    return suggestion?.name || suggestion?.formatted_address || "";
+  };
+
+  const getDisplayAddress = (suggestion) => {
+    if (typeof suggestion === "string") return "";
+    return suggestion?.formatted_address || "";
   };
 
   return (
@@ -68,9 +72,16 @@ const LocationSearchPanel = ({
               <div className="bg-gray-200 h-9 w-9 flex items-center justify-center rounded-full shrink-0">
                 <i className="ri-map-pin-2-fill text-gray-600 text-base"></i>
               </div>
-              <h4 className="font-medium text-gray-800 text-base truncate">
-                {elem}
-              </h4>
+              <div className="min-w-0">
+                <h4 className="font-medium text-gray-800 text-base truncate">
+                  {getDisplayName(elem)}
+                </h4>
+                {getDisplayAddress(elem) && (
+                  <p className="text-gray-500 text-sm truncate">
+                    {getDisplayAddress(elem)}
+                  </p>
+                )}
+              </div>
             </li>
           ))}
         </ul>
@@ -80,3 +91,4 @@ const LocationSearchPanel = ({
 };
 
 export default memo(LocationSearchPanel);
+
