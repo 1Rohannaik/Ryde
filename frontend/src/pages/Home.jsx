@@ -16,6 +16,8 @@ import LiveTracking from "../components/LiveTracking";
 const Home = () => {
   const [pickup, setPickup] = useState("");
   const [destination, setDestination] = useState("");
+  const [pickupData, setPickupData] = useState(null); // { name, formatted_address, lat, lon }
+  const [destinationData, setDestinationData] = useState(null); // { name, formatted_address, lat, lon }
   const [panelOpen, setPanelOpen] = useState(false);
   const [vehiclePanel, setVehiclePanel] = useState(false);
   const [confirmRidePanel, setConfirmRidePanel] = useState(false);
@@ -109,9 +111,33 @@ const Home = () => {
     };
   }, [navigate, pickupCoords, destinationCoords, routeCoords]);
 
+  // Handle when user selects a suggestion from the autocomplete panel
+  const handlePickupSelect = (suggestion) => {
+    if (typeof suggestion === "object" && suggestion.lat && suggestion.lon) {
+      setPickup(suggestion.name || suggestion.formatted_address);
+      setPickupData(suggestion);
+      setPickupCoords({ lat: suggestion.lat, lng: suggestion.lon });
+    } else {
+      setPickup(typeof suggestion === "string" ? suggestion : suggestion?.name || "");
+      setPickupData(null);
+    }
+  };
+
+  const handleDestinationSelect = (suggestion) => {
+    if (typeof suggestion === "object" && suggestion.lat && suggestion.lon) {
+      setDestination(suggestion.name || suggestion.formatted_address);
+      setDestinationData(suggestion);
+      setDestinationCoords({ lat: suggestion.lat, lng: suggestion.lon });
+    } else {
+      setDestination(typeof suggestion === "string" ? suggestion : suggestion?.name || "");
+      setDestinationData(null);
+    }
+  };
+
   const handlePickupChange = async (e) => {
     const value = e.target.value;
     setPickup(value);
+    setPickupData(null); // Clear stored data when user types manually
     
     // Clear the previous timeout
     if (pickupTimeoutRef.current) {
@@ -145,6 +171,7 @@ const Home = () => {
   const handleDestinationChange = async (e) => {
     const value = e.target.value;
     setDestination(value);
+    setDestinationData(null); // Clear stored data when user types manually
 
     // Clear the previous timeout
     if (destinationTimeoutRef.current) {
@@ -187,24 +214,31 @@ const Home = () => {
     setPanelOpen(false);
 
     try {
-      // First try to geocode both pickup and destination
-      let pCoords, dCoords;
-      try {
-        const pRes = await axios.get(`${import.meta.env.VITE_BASE_URL}/maps/coordinates`, {
-          params: { address: pickup },
-          withCredentials: true,
-        });
-        pCoords = pRes.data;
-        setPickupCoords(pCoords);
-        
-        const dRes = await axios.get(`${import.meta.env.VITE_BASE_URL}/maps/coordinates`, {
-          params: { address: destination },
-          withCredentials: true,
-        });
-        dCoords = dRes.data;
-        setDestinationCoords(dCoords);
+      // Use coordinates from autocomplete selection, or fall back to geocoding
+      let pCoords = pickupCoords;
+      let dCoords = destinationCoords;
 
-        // If we got both coordinates, fetch the route
+      try {
+        // Only geocode if we don't already have coordinates from autocomplete
+        if (!pCoords) {
+          const pRes = await axios.get(`${import.meta.env.VITE_BASE_URL}/maps/coordinates`, {
+            params: { address: pickup },
+            withCredentials: true,
+          });
+          pCoords = pRes.data;
+          setPickupCoords(pCoords);
+        }
+
+        if (!dCoords) {
+          const dRes = await axios.get(`${import.meta.env.VITE_BASE_URL}/maps/coordinates`, {
+            params: { address: destination },
+            withCredentials: true,
+          });
+          dCoords = dRes.data;
+          setDestinationCoords(dCoords);
+        }
+
+        // Fetch the route using the coordinates
         if (pCoords && dCoords) {
            const rRes = await axios.get(`${import.meta.env.VITE_BASE_URL}/maps/route`, {
              params: { 
@@ -221,7 +255,7 @@ const Home = () => {
         console.error("Geocoding or route error:", err);
       }
 
-      // Then get the fare
+      // Get the fare using the address names
       const response = await axios.get(
         `${import.meta.env.VITE_BASE_URL}/ride/get-fare`,
         {
@@ -417,8 +451,8 @@ const Home = () => {
               }
               setPanelOpen={setPanelOpen}
               setVehiclePanel={setVehiclePanel}
-              setPickup={setPickup}
-              setDestination={setDestination}
+              setPickup={handlePickupSelect}
+              setDestination={handleDestinationSelect}
               activeField={activeField}
             />
           </div>
