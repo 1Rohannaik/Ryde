@@ -39,7 +39,22 @@ module.exports = {
     }
   },
 
-  // 🚗 Get distance and time using OpenRouteService
+  // 🧮 Haversine distance calculation (fallback when ORS fails)
+  _haversineDistance: (lat1, lng1, lat2, lng2) => {
+    const R = 6371; // Earth radius in km
+    const dLat = ((lat2 - lat1) * Math.PI) / 180;
+    const dLng = ((lng2 - lng1) * Math.PI) / 180;
+    const a =
+      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+      Math.cos((lat1 * Math.PI) / 180) *
+        Math.cos((lat2 * Math.PI) / 180) *
+        Math.sin(dLng / 2) *
+        Math.sin(dLng / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    return R * c;
+  },
+
+  // 🚗 Get distance and time using OpenRouteService (with Haversine fallback)
   getDistanceTime: async (originStr, destinationStr) => {
     try {
       console.log("📦 Origin:", originStr);
@@ -75,36 +90,60 @@ module.exports = {
 
       console.log("📍 Sending coordinates to ORS:", coordinates);
 
-      const response = await axios.post(
-        "https://api.openrouteservice.org/v2/directions/driving-car",
-        { coordinates },
-        {
-          headers: {
-            Authorization: process.env.ORS_API_KEY,
-            "Content-Type": "application/json",
-          },
+      try {
+        const response = await axios.post(
+          "https://api.openrouteservice.org/v2/directions/driving-car",
+          { coordinates },
+          {
+            headers: {
+              Authorization: process.env.ORS_API_KEY,
+              "Content-Type": "application/json",
+            },
+            timeout: 10000, // 10 second timeout
+          }
+        );
+
+        const { routes } = response.data;
+
+        if (!routes || routes.length === 0) {
+          throw new Error("No routes found in ORS response");
         }
-      );
 
-      const { routes } = response.data;
+        const summary = routes[0].summary;
 
-      if (!routes || routes.length === 0) {
-        throw new Error("No routes found in ORS response");
+        if (!summary) {
+          throw new Error("No summary found in ORS response");
+        }
+
+        console.log("📏 Distance (m):", summary.distance);
+        console.log("⏱ Duration (s):", summary.duration);
+
+        return {
+          distance: (summary.distance / 1000).toFixed(2), // in km
+          duration: (summary.duration / 60).toFixed(2), // in minutes
+        };
+      } catch (orsError) {
+        // ORS failed — use Haversine fallback
+        console.warn(
+          "⚠️ ORS API failed, using Haversine fallback:",
+          orsError.response?.data?.error?.message || orsError.message
+        );
+
+        const haversineKm = module.exports._haversineDistance(
+          startLat, startLng, endLat, endLng
+        );
+        // Approximate road distance is ~1.3x haversine, assume avg 30km/h city speed
+        const roadDistance = (haversineKm * 1.3).toFixed(2);
+        const durationMin = ((haversineKm * 1.3) / 30 * 60).toFixed(2);
+
+        console.log("📏 Haversine fallback distance (km):", roadDistance);
+        console.log("⏱ Haversine fallback duration (min):", durationMin);
+
+        return {
+          distance: roadDistance,
+          duration: durationMin,
+        };
       }
-
-      const summary = routes[0].summary;
-
-      if (!summary) {
-        throw new Error("No summary found in ORS response");
-      }
-
-      console.log("📏 Distance (m):", summary.distance);
-      console.log("⏱ Duration (s):", summary.duration);
-
-      return {
-        distance: (summary.distance / 1000).toFixed(2), // in km
-        duration: (summary.duration / 60).toFixed(2), // in minutes
-      };
     } catch (error) {
       console.error(
         "❌ Error in getDistanceTime:",
@@ -114,7 +153,7 @@ module.exports = {
     }
   },
 
-  // 🗺 Get route polyline logic
+  // 🗺 Get route polyline (with straight-line fallback)
   getRoutePolyline: async (originStr, destinationStr) => {
     try {
       const [startLat, startLng] = originStr.split(",").map(Number);
@@ -125,7 +164,7 @@ module.exports = {
       }
 
       if (originStr === destinationStr) {
-        return [[[startLat, startLng], [endLat, endLng]]];
+        return [[startLat, startLng], [endLat, endLng]];
       }
 
       const coordinates = [
@@ -133,26 +172,38 @@ module.exports = {
         [endLng, endLat],
       ];
 
-      const response = await axios.post(
-        "https://api.openrouteservice.org/v2/directions/driving-car/geojson",
-        { coordinates },
-        {
-          headers: {
-            Authorization: process.env.ORS_API_KEY,
-            "Content-Type": "application/json",
-          },
+      try {
+        const response = await axios.post(
+          "https://api.openrouteservice.org/v2/directions/driving-car/geojson",
+          { coordinates },
+          {
+            headers: {
+              Authorization: process.env.ORS_API_KEY,
+              "Content-Type": "application/json",
+            },
+            timeout: 10000, // 10 second timeout
+          }
+        );
+
+        if (!response.data || !response.data.features || response.data.features.length === 0) {
+          throw new Error("No route found");
         }
-      );
 
-      if (!response.data || !response.data.features || response.data.features.length === 0) {
-        throw new Error("No route found");
+        // GeoJSON paths are [longitude, latitude], Leaflet needs [latitude, longitude]
+        const coords = response.data.features[0].geometry.coordinates;
+        const polyline = coords.map((coord) => [coord[1], coord[0]]);
+        
+        return polyline;
+      } catch (orsError) {
+        // ORS failed — return a straight line fallback
+        console.warn(
+          "⚠️ ORS route API failed, returning straight-line fallback:",
+          orsError.response?.data?.error?.message || orsError.message
+        );
+
+        // Return a simple straight line between the two points
+        return [[startLat, startLng], [endLat, endLng]];
       }
-
-      // GeoJSON paths are [longitude, latitude], Leaflet needs [latitude, longitude]
-      const coords = response.data.features[0].geometry.coordinates;
-      const polyline = coords.map((coord) => [coord[1], coord[0]]);
-      
-      return polyline;
     } catch (error) {
       console.error("❌ Error in getRoutePolyline:", error.response?.data || error.message);
       throw new Error("Failed to fetch route polyline");
