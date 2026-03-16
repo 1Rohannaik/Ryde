@@ -226,12 +226,20 @@ module.exports = {
       }
     }
 
-    const url = `https://api.geoapify.com/v1/geocode/autocomplete?text=${encodeURIComponent(
-      input
-    )}&limit=5&bias=proximity:${LOCATION_BIAS.lon},${LOCATION_BIAS.lat}&apiKey=${process.env.GEOAPIFY_API_KEY}`;
-
     try {
-      const response = await axios.get(url, { timeout: 8000 });
+      const response = await axios.get(
+        "https://api.geoapify.com/v1/geocode/autocomplete",
+        {
+          params: {
+            text: input,
+            limit: 5,
+            filter: "countrycode:in",
+            bias: `proximity:${LOCATION_BIAS.lon},${LOCATION_BIAS.lat}`,
+            apiKey: process.env.GEOAPIFY_API_KEY,
+          },
+          timeout: 8000,
+        }
+      );
 
       if (!response.data || !response.data.features) {
         return [];
