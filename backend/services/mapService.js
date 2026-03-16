@@ -210,7 +210,7 @@ module.exports = {
     }
   },
 
-  // 🔍 Autocomplete suggestions for places
+  // 🔍 Autocomplete suggestions using Geoapify API
   getAutoCompleteSuggestions: async (input) => {
     if (!input) throw new Error("Query is required");
 
@@ -226,20 +226,20 @@ module.exports = {
       }
     }
 
-    const url = `https://photon.komoot.io/api/?q=${encodeURIComponent(
+    const url = `https://api.geoapify.com/v1/geocode/autocomplete?text=${encodeURIComponent(
       input
-    )}&limit=5&lat=${LOCATION_BIAS.lat}&lon=${LOCATION_BIAS.lon}`;
+    )}&limit=5&bias=proximity:${LOCATION_BIAS.lon},${LOCATION_BIAS.lat}&apiKey=${process.env.GEOAPIFY_API_KEY}`;
 
     try {
-      const response = await axios.get(url, {
-        headers: { "User-Agent": USER_AGENT },
-      });
-      
+      const response = await axios.get(url, { timeout: 8000 });
+
+      if (!response.data || !response.data.features) {
+        return [];
+      }
+
       const suggestions = response.data.features.map((feature) => {
-        const p = feature.properties;
-        const parts = [p.name, p.street, p.city, p.state, p.country].filter(Boolean);
-        return [...new Set(parts)].join(", ");
-      });
+        return feature.properties.formatted || feature.properties.name || "";
+      }).filter(Boolean);
 
       // Store in simple cache
       autocompleteCache.set(cacheKey, {
@@ -250,11 +250,7 @@ module.exports = {
       return suggestions;
     } catch (err) {
       console.error("❌ Error in getAutoCompleteSuggestions:", err.message);
-      // Fallback for API limits/errors. Instead of 500, return empty array to UI gracefully.
-      if (err.response && (err.response.status === 403 || err.response.status === 429)) {
-         return [];
-      }
-      throw err;
+      return []; // Always return empty array on error to avoid crashing the UI
     }
   },
 
