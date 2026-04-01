@@ -5,6 +5,7 @@ import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import LiveTracking from "../components/LiveTracking";
 import { useSocket } from "../context/SocketContext";
+import { useCaptain } from "../context/CaptainContext";
 import axios from "axios";
 
 const CaptainRiding = () => {
@@ -13,6 +14,7 @@ const CaptainRiding = () => {
   const location = useLocation();
   const rideData = location.state?.ride;
   const { socket } = useSocket();
+  const { captain } = useCaptain();
   const [captainLocation, setCaptainLocation] = useState(null);
   const [pickupCoords, setPickupCoords] = useState(null);
   const [destinationCoords, setDestinationCoords] = useState(null);
@@ -76,27 +78,51 @@ const CaptainRiding = () => {
   }, [rideData]);
 
   useEffect(() => {
-    // Some browsers (like desktop Chrome) violently reject watchPosition if highAccuracy 
-    // or tight timeouts are used incorrectly. The safest fallback is a simple watch.
-    const watchId = navigator.geolocation.watchPosition(
-      (pos) => {
-        const { latitude, longitude } = pos.coords;
-        setCaptainLocation({ lat: latitude, lng: longitude });
-      },
-      (err) => {
-        console.error(`CaptainRiding Geolocation Error (${err.code}):`, err.message);
-      },
-      { 
-        enableHighAccuracy: true, 
-        maximumAge: 0,
-        // Remove timeout entirely. If the browser can't get it, let it wait indefinitely.
-      }
-    );
+    let intervalId;
 
-    return () => {
-      navigator.geolocation.clearWatch(watchId);
+    const trackAndEmitLocation = () => {
+      if (!navigator.geolocation || !socket) return;
+      
+      // Get the ID from context or rideData
+      const userId = captain?.id || rideData?.captain?._id || rideData?.captain?.id;
+      if (!userId) return;
+
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          const { latitude, longitude } = pos.coords;
+          
+          // Update local state for map rendering
+          setCaptainLocation({ lat: latitude, lng: longitude });
+
+          // Emit to backend using the exact format expected by socket.js
+          socket.emit("update-location-captain", {
+            userId: userId,
+            location: { latitude, longitude }
+          });
+        },
+        (err) => {
+          console.error(`CaptainRiding Geolocation Error (${err.code}):`, err.message);
+        },
+        { 
+          enableHighAccuracy: true, 
+          maximumAge: 0,
+        }
+      );
     };
-  }, []);
+
+    // Run immediately once
+    trackAndEmitLocation();
+
+    // Set interval to continuously track and emit every 3 seconds (3000ms)
+    intervalId = setInterval(trackAndEmitLocation, 3000);
+
+    // Cleanup interval on unmount
+    return () => {
+      if (intervalId) {
+        clearInterval(intervalId);
+      }
+    };
+  }, [socket, captain, rideData]);
 
   return (
     <div className="h-screen relative flex flex-col justify-end z-10">
