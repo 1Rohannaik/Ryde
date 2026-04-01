@@ -5,7 +5,6 @@ import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import LiveTracking from "../components/LiveTracking";
 import { useSocket } from "../context/SocketContext";
-import { useCaptain } from "../context/CaptainContext";
 import axios from "axios";
 
 const CaptainRiding = () => {
@@ -14,7 +13,6 @@ const CaptainRiding = () => {
   const location = useLocation();
   const rideData = location.state?.ride;
   const { socket } = useSocket();
-  const { captain } = useCaptain();
   const [captainLocation, setCaptainLocation] = useState(null);
   const [pickupCoords, setPickupCoords] = useState(null);
   const [destinationCoords, setDestinationCoords] = useState(null);
@@ -84,13 +82,6 @@ const CaptainRiding = () => {
       (pos) => {
         const { latitude, longitude } = pos.coords;
         setCaptainLocation({ lat: latitude, lng: longitude });
-
-        if (captain && socket) {
-          socket.emit("update-location-captain", {
-            userId: captain.id,
-            location: { latitude, longitude },
-          });
-        }
       },
       (err) => {
         console.error(`CaptainRiding Geolocation Error (${err.code}):`, err.message);
