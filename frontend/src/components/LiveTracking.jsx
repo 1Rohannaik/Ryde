@@ -26,7 +26,12 @@ const createColorIcon = (color) => {
 
 const pickupIcon = createColorIcon('green');
 const destinationIcon = createColorIcon('red');
-const captainIcon = createColorIcon('blue'); // We'll use blue for captain for now
+const captainIcon = new L.divIcon({
+  html: '<div style="font-size: 24px; text-align: center; margin-top: -12px; margin-left: -12px;">🚘</div>',
+  className: '', // removes default background
+  iconSize: [24, 24],
+  iconAnchor: [12, 12]
+});
 
 // Component to handle map bounds and recentering
 const MapController = ({ position, route, pickup, destination, captainLocation, showRoute }) => {
